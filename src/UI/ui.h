@@ -39,6 +39,9 @@ extern lv_obj_t * ui____initial_actions0;
 // IMAGES AND IMAGE SETS
 LV_IMG_DECLARE(ui_img_weather_icon_png);    // assets/weather_icon.png
 LV_IMG_DECLARE(ui_img_roomtemp_png);    // assets/roomTemp.png
+LV_IMG_DECLARE(ui_img_alarm_png);    // assets/alarm.png
+LV_IMG_DECLARE(ui_img_wifion_png);    // assets/wifiOn.png
+LV_IMG_DECLARE(ui_img_powered_png);    // assets/powered.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_Heading_1);

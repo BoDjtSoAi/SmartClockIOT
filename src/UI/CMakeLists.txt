@@ -4,6 +4,9 @@ SET(SOURCES ui_mainTime.c
     ui_helpers.c
     ui_img_weather_icon_png.c
     ui_img_roomtemp_png.c
+    ui_img_alarm_png.c
+    ui_img_wifion_png.c
+    ui_img_powered_png.c
     fonts/ui_font_Heading_1.c
     fonts/ui_font_Heading_2.c
     fonts/ui_font_InterMedium.c
