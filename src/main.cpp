@@ -1,151 +1,141 @@
-//Arduino-TFT_eSPI board-template main routine. There's a TFT_eSPI create+flush driver already in LVGL-9.1 but we create our own here for more control (like e.g. 16-bit color swap).
-
-#include <lvgl.h>
-#include <LGFX_Setup.h>
-#include <UI/ui.h>
+#include <Arduino.h>
 #include <Wire.h>
 #include <RTClib.h>
+#include <lvgl.h>
+#include "LGFX_Setup.h" 
+#include "ui/ui.h" 
 
+// --- RTC Objects ---
 RTC_DS3231 rtc;
-// Cấu hình chân I2C ESP32-S3 WeAct
 #define I2C_SDA 42
 #define I2C_SCL 41
+
+// Mảng tên ngày/tháng
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 char monthsOfTheYear[12][10] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
-/*Don't forget to set Sketchbook location in File/Preferences to the path of your UI project (the parent foder of this INO file)*/
+// --- Display & Buffer Config ---
+#define SCREEN_WIDTH 480
+#define SCREEN_HEIGHT 320
 
-/*Change to your screen resolution*/
-static const uint16_t screenWidth  = 480;
-static const uint16_t screenHeight = 320;
+// 1/10 Screen Buffer (Tối ưu cho SPI DMA)
+#define BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10)
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf[BUF_SIZE];
 
-enum { SCREENBUFFER_SIZE_PIXELS = screenWidth * screenHeight / 10 };
-static lv_color_t buf [SCREENBUFFER_SIZE_PIXELS];
+// --- LGFX Instance ---
+LGFX tft;
 
-LGFX tft; /* TFT instance */
+/* --- DISPLAY FLUSHING (Dùng DMA để Max Speed) --- */
+void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
+    uint32_t w = (area->x2 - area->x1 + 1);
+    uint32_t h = (area->y2 - area->y1 + 1);
 
-#if LV_USE_LOG != 0
-/* Serial debugging */
-void my_print(const char * buf)
-{
-    Serial.printf(buf);
-    Serial.flush();
-}
-#endif
-
-/* Display flushing */
-void my_disp_flush (lv_display_t *disp, const lv_area_t *area, uint8_t *pixelmap)
-{
-    uint32_t w = ( area->x2 - area->x1 + 1 );
-    uint32_t h = ( area->y2 - area->y1 + 1 );
-
-    if (LV_COLOR_16_SWAP) {
-        size_t len = lv_area_get_size( area );
-        lv_draw_sw_rgb565_swap( pixelmap, len );
+    if (tft.getStartCount() == 0) {
+        tft.endWrite();
     }
-
-    tft.pushImage( area->x1, area->y1, w, h, (uint16_t*) pixelmap );
-
-    lv_disp_flush_ready( disp );
+    // Đẩy dữ liệu qua DMA
+    tft.pushImageDMA(area->x1, area->y1, w, h, (uint16_t *)&color_p->full);
+    
+    lv_disp_flush_ready(disp);
 }
 
-/*Read the touchpad*/
-void my_touchpad_read (lv_indev_t * indev_driver, lv_indev_data_t * data)
-{
-    uint16_t touchX = 0, touchY = 0;
+/* --- TOUCHPAD READ --- */
+void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
+    uint16_t touchX, touchY;
+    bool touched = tft.getTouch(&touchX, &touchY);
 
-    bool touched = tft.getTouch( &touchX, &touchY );
-
-    if (!touched)
-    {
+    if (!touched) {
         data->state = LV_INDEV_STATE_REL;
-    }
-    else
-    {
+    } else {
         data->state = LV_INDEV_STATE_PR;
-
-        /*Set the coordinates*/
         data->point.x = touchX;
         data->point.y = touchY;
-
-        Serial.print( "Data x " );
-        Serial.println( touchX );
-
-        Serial.print( "Data y " );
-        Serial.println( touchY );
     }
 }
 
-/*Set tick routine needed for LVGL internal timings*/
-static uint32_t my_tick_get_cb (void) { return millis(); }
-
-
-void setup ()
-{
-    Serial.begin( 115200 ); /* prepare for possible serial debug */
-
-    String LVGL_Arduino = "Hello Arduino! ";
-    LVGL_Arduino += String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
-
-    Serial.println( LVGL_Arduino );
-    Serial.println( "I am LVGL_Arduino" );
-
+void setup() {
+    Serial.begin(115200);
+    
+    // --- 1. Init RTC ---
     Wire.begin(I2C_SDA, I2C_SCL);
     if (!rtc.begin()) {
         Serial.println("Couldn't find RTC");
     }
     if (rtc.lostPower()) {
-        Serial.println("RTC lost power, let's set the time!");
+        Serial.println("RTC lost power, setting time...");
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     }
 
-    lv_init();
-
-#if LV_USE_LOG != 0
-    lv_log_register_print_cb( my_print ); /* register print function for debugging */
-#endif
-
-    tft.init();          /* TFT init */
-    tft.setRotation( 1 ); /* Landscape orientation, flipped */
+    // --- 2. Init Hardware Display ---
+    tft.init();
+    tft.setRotation(1); 
     tft.setBrightness(255);
-    tft.setSwapBytes(true);
     
-    static lv_disp_t* disp;
-    disp = lv_display_create( screenWidth, screenHeight );
-    lv_display_set_buffers( disp, buf, NULL, SCREENBUFFER_SIZE_PIXELS * sizeof(lv_color_t), LV_DISPLAY_RENDER_MODE_PARTIAL );
-    lv_display_set_flush_cb( disp, my_disp_flush );
+    // --- 3. Init LVGL ---
+    lv_init();
+    lv_disp_draw_buf_init(&draw_buf, buf, NULL, BUF_SIZE);
 
-    static lv_indev_t* indev;
-    indev = lv_indev_create();
-    lv_indev_set_type( indev, LV_INDEV_TYPE_POINTER );
-    lv_indev_set_read_cb( indev, my_touchpad_read );
+    // --- 4. Register Display Driver (LVGL 8 Syntax) ---
+    static lv_disp_drv_t disp_drv;
+    lv_disp_drv_init(&disp_drv);
+    disp_drv.hor_res = SCREEN_WIDTH;
+    disp_drv.ver_res = SCREEN_HEIGHT;
+    disp_drv.flush_cb = my_disp_flush;
+    disp_drv.draw_buf = &draw_buf;
+    lv_disp_drv_register(&disp_drv);
 
-    lv_tick_set_cb( my_tick_get_cb );
+    // --- 5. Register Input Driver (LVGL 8 Syntax) ---
+    static lv_indev_drv_t indev_drv;
+    lv_indev_drv_init(&indev_drv);
+    indev_drv.type = LV_INDEV_TYPE_POINTER;
+    indev_drv.read_cb = my_touchpad_read;
+    lv_indev_drv_register(&indev_drv);
 
-    ui_init();
+    // --- 6. Init UI ---
+    ui_init(); 
 
-    Serial.println( "Setup done" );
+    Serial.println("Setup done");
 }
 
-void loop ()
-{
-    lv_timer_handler(); /* let the GUI do its work */
-
+void loop() {
+    lv_timer_handler(); // Để LVGL vẽ giao diện
+    
+    // --- Logic cập nhật đồng hồ (Mỗi 1 giây chạy 1 lần) ---
     static uint32_t last_update = 0;
     if (millis() - last_update >= 1000) {
         last_update = millis();
+        
         DateTime now = rtc.now();
         
-        // Update UI labels
-        if(uic_dateMonth) lv_label_set_text_fmt(uic_dateMonth, "%02d %s", now.day(), monthsOfTheYear[now.month() - 1]);
-        if(uic_dayOfWeek) lv_label_set_text(uic_dayOfWeek, daysOfTheWeek[now.dayOfTheWeek()]);
-        if(uic_hours) lv_label_set_text_fmt(uic_hours, "%02d:%02d", now.hour(), now.minute());
-        if(uic_seconds) lv_label_set_text_fmt(uic_seconds, ":%02d", now.second());
+        // --- Cập nhật UI (Đã khôi phục code UIC của bạn) ---
+        
+        // 1. Cập nhật Ngày/Tháng
+        if(uic_dateMonth) {
+            lv_label_set_text_fmt(uic_dateMonth, "%02d %s", now.day(), monthsOfTheYear[now.month() - 1]);
+        }
+
+        // 2. Cập nhật Thứ
+        if(uic_dayOfWeek) {
+            lv_label_set_text(uic_dayOfWeek, daysOfTheWeek[now.dayOfTheWeek()]);
+        }
+
+        // 3. Cập nhật Giờ:Phút
+        if(uic_hours) {
+            lv_label_set_text_fmt(uic_hours, "%02d:%02d", now.hour(), now.minute());
+        }
+
+        // 4. Cập nhật Giây
+        if(uic_seconds) {
+            lv_label_set_text_fmt(uic_seconds, ":%02d", now.second());
+        }
+        
+        // 5. Cập nhật Nhiệt độ RTC
         if(uic_rtcTemp) {
              String temp = String(rtc.getTemperature(), 1) + " 'C";
              lv_label_set_text(uic_rtcTemp, temp.c_str());
         }
     }
 
-    delay(5);
+    delay(5); // Nhường CPU để không bị nóng
 }
