@@ -1,0 +1,14 @@
+SET(SOURCES ui_mainTime.c
+    ui.c
+    ui_comp_hook.c
+    ui_helpers.c
+    ui_img_weather_icon_png.c
+    ui_img_roomtemp_png.c
+    fonts/ui_font_Heading_1.c
+    fonts/ui_font_Heading_2.c
+    fonts/ui_font_InterMedium.c
+    fonts/ui_font_InterSmall.c
+    fonts/ui_font_interTemp.c
+    fonts/ui_font_weatherText.c)
+
+add_library(ui ${SOURCES})
