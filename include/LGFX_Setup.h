@@ -20,8 +20,8 @@ public:
       cfg.spi_mode = 0;
       
       // OPTION: Nếu hình ảnh tốt ở 40MHz, hãy thử bỏ comment dòng 80MHz để mượt hơn
-       cfg.freq_write = 80000000; // Max Performance (80MHz)
-      //cfg.freq_write = 40000000;    // Safe Mode (40MHz) - YOUR CURRENT SETTING
+      //cfg.freq_write = 80000000; // Max Performance (80MHz)
+      cfg.freq_write = 40000000;    // Safe Mode (40MHz) - YOUR CURRENT SETTING
       
       cfg.freq_read  = 16000000;    
       cfg.spi_3wire  = false;       
