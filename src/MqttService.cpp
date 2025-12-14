@@ -52,6 +52,10 @@ String airQualityMessage;
 String clockMessage;
 String alarmMessage;
 
+// Shared weather data for UI
+char currentWeatherDesc[50] = "N/A";
+float currentTemp = 0.0;
+
 bool newWeather = false;
 bool newAir = false;
 bool newClock = false;
@@ -158,6 +162,11 @@ void processWeatherInformation(const String &message)
   float humidity = doc["humidity"];
   const char *desc = doc["desc"];
 
+  // Store for alarm screen
+  currentTemp = temp;
+  strncpy(currentWeatherDesc, desc, sizeof(currentWeatherDesc) - 1);
+  currentWeatherDesc[sizeof(currentWeatherDesc) - 1] = '\0';
+
   // Change to print in lvgl
   // Serial.print("Khu vực: ");
   // Serial.println(city);
@@ -168,6 +177,11 @@ void processWeatherInformation(const String &message)
   // Serial.print("Mô tả: ");
   // Serial.println(desc);
 
+  if (uic_cityName)
+  {
+    lv_label_set_text(uic_cityName, city);
+  }
+  
   if (uic_weatherTemp)
   {
     String tempStr = String(temp, 1) + " 'C";
@@ -253,6 +267,19 @@ void setAlarmFromMQTT(const String &message)
   rtc.clearAlarm(1);
   rtc.setAlarm1(DateTime(2020, 1, 1, alarm1.hour, alarm1.minute, 0), DS3231_A1_Hour);
 }
+
+void dismissAlarm()
+{
+  // Turn off alarm logic
+  alarm1.enabled = false; 
+  buzzerBeepCount = 0;
+  digitalWrite(BUZZER_PIN, LOW);
+  rtc.clearAlarm(1);
+
+  // Switch back to main screen
+  lv_disp_load_scr(ui_mainTime);
+}
+
 //-----------------------------------kiểm tra và xử lý khi có báo thức---------------------------------//
 void checkAlarmTrigger()
 {
@@ -263,8 +290,26 @@ void checkAlarmTrigger()
     DateTime now = rtc.now();
     if (alarm1.enabled && alarm1.activeDays[now.dayOfTheWeek()])
     {
-      buzzerBeepCount = 5;
-      buzzerState = false;
+      // Switch to alarm screen instead of buzzer
+      lv_disp_load_scr(ui_alarmRang);
+
+      // Feed data to the screen
+      // Format date: "Monday, January 15"
+      const char* daysOfWeek[7] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+      const char* months[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+      char dateStr[50];
+      snprintf(dateStr, sizeof(dateStr), "%s, %s %d", daysOfWeek[now.dayOfTheWeek()], months[now.month() - 1], now.day());
+      if(uic_dowDate) lv_label_set_text(uic_dowDate, dateStr);
+
+      // Format weather: "38'C Sunny"
+      char tempStr[50];
+      snprintf(tempStr, sizeof(tempStr), "%.0f'C %s", currentTemp, currentWeatherDesc);
+      if(uic_temp) lv_label_set_text(uic_temp, tempStr);
+
+      // Format time: "HH:MM"
+      char timeStr[6];
+      snprintf(timeStr, sizeof(timeStr), "%02d:%02d", now.hour(), now.minute());
+      if(uic_alarmTimeBig) lv_label_set_text(uic_alarmTimeBig, timeStr);
     }
     rtc.clearAlarm(1);
   }
