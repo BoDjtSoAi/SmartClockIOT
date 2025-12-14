@@ -5,11 +5,25 @@
 #include <lvgl.h>
 #include "LGFX_Setup.h"
 #include "ui/ui.h"
+#include <MqttService.h>
 
 // --- RTC Objects ---
 RTC_DS3231 rtc;
 #define I2C_SDA 42
 #define I2C_SCL 41
+
+// --- HC-SR05 Ultrasonic Sensor ---
+#define TRIG_PIN 18
+#define ECHO_PIN 17
+#define DETECTION_DISTANCE 30 // cm - khoảng cách phát hiện
+#define SCREEN_ON_TIME 10000  // 10 giây giữ màn hình sáng
+#define SCREEN_BRIGHTNESS 255 // Độ sáng màn hình khi bật
+
+// --- Screen Control Variables ---
+unsigned long lastDetectionTime = 0;
+bool screenOn = true;
+int currentBrightness = 255;
+int targetBrightness = 255;
 
 // Mảng tên ngày/tháng
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -63,6 +77,41 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     }
 }
 
+// --- HC-SR05: Đo khoảng cách ---
+float getDistance()
+{
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+
+    long duration = pulseIn(ECHO_PIN, HIGH, 30000); // Timeout 30ms
+    if (duration == 0)
+        return 999; // Không đo được
+
+    float distance = duration * 0.034 / 2; // cm
+    return distance;
+}
+
+// --- Điều chỉnh độ sáng từ từ ---
+void smoothBrightness()
+{
+    if (currentBrightness < targetBrightness)
+    {
+        currentBrightness += 2; // Tăng từ từ
+        if (currentBrightness > targetBrightness)
+            currentBrightness = targetBrightness;
+    }
+    else if (currentBrightness > targetBrightness)
+    {
+        currentBrightness -= 2; // Giảm từ từ
+        if (currentBrightness < targetBrightness)
+            currentBrightness = targetBrightness;
+    }
+    tft.setBrightness(currentBrightness);
+}
+
 void updateWifiStatus()
 {
     // Kiểm tra trạng thái kết nối
@@ -86,6 +135,10 @@ void updateWifiStatus()
 void setup()
 {
     Serial.begin(115200);
+
+    // --- Init HC-SR05 ---
+    pinMode(TRIG_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
 
     // --- 1. Init RTC ---
     Wire.begin(I2C_SDA, I2C_SCL);
@@ -126,12 +179,46 @@ void setup()
 
     // --- 6. Init UI ---
     ui_init();
-    Serial.println("Setup done");
+    System_Init();
 }
 
 void loop()
 {
     lv_timer_handler(); // Để LVGL vẽ giao diện
+
+    // --- Phát hiện người gần bằng HC-SR05 ---
+    static unsigned long lastSensorCheck = 0;
+    if (millis() - lastSensorCheck >= 200) // Kiểm tra mỗi 200ms
+    {
+        lastSensorCheck = millis();
+        float distance = getDistance();
+
+        if (distance < DETECTION_DISTANCE && distance > 0)
+        {
+            // Có người gần → Bật màn hình
+            lastDetectionTime = millis();
+            if (!screenOn)
+            {
+                screenOn = true;
+                targetBrightness = SCREEN_BRIGHTNESS;
+            }
+        }
+    }
+
+    // --- Kiểm tra thời gian tự tắt màn ---
+    if (screenOn && (millis() - lastDetectionTime > SCREEN_ON_TIME))
+    {
+        screenOn = false;
+        targetBrightness = 0;
+    }
+
+    // --- Điều chỉnh độ sáng từ từ ---
+    static unsigned long lastBrightnessUpdate = 0;
+    if (millis() - lastBrightnessUpdate >= 30) // Cập nhật mỗi 30ms
+    {
+        lastBrightnessUpdate = millis();
+        smoothBrightness();
+    }
 
     // --- Logic cập nhật đồng hồ (Mỗi 1 giây chạy 1 lần) ---
     static uint32_t last_update = 0;
@@ -200,5 +287,6 @@ void loop()
         updateWifiStatus(); // Cập nhật trạng thái WiFi mỗi 5 giây
         last_check = millis();
     }
+    System_Handle_Loop();
     delay(3); // Nhường CPU để không bị nóng
 }

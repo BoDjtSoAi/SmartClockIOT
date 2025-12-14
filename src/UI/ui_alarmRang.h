@@ -13,7 +13,11 @@ extern "C" {
 // SCREEN: ui_alarmRang
 extern void ui_alarmRang_screen_init(void);
 extern void ui_alarmRang_screen_destroy(void);
+extern void ui_event_alarmRang(lv_event_t * e);
 extern lv_obj_t * ui_alarmRang;
+extern void ui_event_background(lv_event_t * e);
+extern lv_obj_t * ui_background;
+extern void ui_event_headerLeft(lv_event_t * e);
 extern lv_obj_t * ui_headerLeft;
 extern lv_obj_t * ui_Image6;
 extern lv_obj_t * ui_dowDate;

@@ -13,7 +13,10 @@ extern "C" {
 // SCREEN: ui_mainTime
 extern void ui_mainTime_screen_init(void);
 extern void ui_mainTime_screen_destroy(void);
+extern void ui_event_mainTime(lv_event_t * e);
 extern lv_obj_t * ui_mainTime;
+extern lv_obj_t * ui_Container5;
+extern lv_obj_t * ui_Container7;
 extern lv_obj_t * ui_Container1;
 extern lv_obj_t * ui_dateMonthPanel;
 extern lv_obj_t * ui_dayOfWeek;
@@ -21,6 +24,7 @@ extern lv_obj_t * ui_dateMonth;
 extern lv_obj_t * ui_timePanel;
 extern lv_obj_t * ui_hours;
 extern lv_obj_t * ui_seconds;
+extern lv_obj_t * ui_Label1;
 extern lv_obj_t * ui_tempaturePanel;
 extern lv_obj_t * ui_weatherIcon;
 extern lv_obj_t * ui_Image2;
