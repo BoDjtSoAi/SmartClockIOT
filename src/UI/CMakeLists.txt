@@ -1,4 +1,5 @@
-SET(SOURCES ui_mainTime.c
+SET(SOURCES ui_Screen3.c
+    ui_mainTime.c
     ui_alarmRang.c
     ui_theme_manager.c
     ui_themes.c
@@ -6,6 +7,7 @@ SET(SOURCES ui_mainTime.c
     ui_comp_hook.c
     ui_helpers.c
     ui_events.c
+    ui_img_1728762676.c
     ui_img_weather_icon_png.c
     ui_img_roomtemp_png.c
     ui_img_alarm_png.c
@@ -16,6 +18,22 @@ SET(SOURCES ui_mainTime.c
     ui_img_alarmicon_png.c
     ui_img_button_dissmiss_png.c
     ui_img_buttonsnooze_png.c
+    ui_img_1728761651.c
+    ui_img_1728760626.c
+    ui_img_1728768049.c
+    ui_img_1728758328.c
+    ui_img_1728757303.c
+    ui_img_1728756278.c
+    ui_img_1728763701.c
+    ui_img_1728771388.c
+    ui_img_1728770363.c
+    ui_img_920901967.c
+    ui_img_920900942.c
+    ui_img_920899917.c
+    ui_img_920907340.c
+    ui_img_920896594.c
+    ui_img_920895569.c
+    ui_img_920902992.c
     fonts/ui_font_alarmBig.c
     fonts/ui_font_Heading_1.c
     fonts/ui_font_Heading_2.c

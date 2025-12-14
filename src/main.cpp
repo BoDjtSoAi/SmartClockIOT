@@ -245,7 +245,12 @@ void loop()
 
         // --- SAFETY CHECK: Validate RTC Data ---
         // If RTC is disconnected, it may return garbage (e.g. month=165), causing a crash when accessing arrays.
-        if (now.month() < 1 || now.month() > 12 || now.day() > 31)
+        // Check for valid month, day, hour, minute, second ranges.
+        if (
+            now.month() < 1 || now.month() > 12 ||
+            now.day() < 1 || now.day() > 31 ||
+            now.hour() > 23 || now.minute() > 59 || now.second() > 59
+        )
         {
             Serial.println("[RTC] Error: Invalid time read (RTC disconnected?)");
             rtcStatus = false;

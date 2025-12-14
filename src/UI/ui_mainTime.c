@@ -64,9 +64,8 @@ void ui_event_mainTime(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_SCREEN_LOADED) {
-        ambientHome_Animation(ui_Container1, 0);
         homeFlyIn_Animation(ui_Container2, 0);
-        ambientHome_Animation(ui_Container2, 0);
+        ambientHome_Animation(ui_Container1, 0);
     }
 }
 
@@ -97,6 +96,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_flex_flow(ui_Container1, LV_FLEX_FLOW_COLUMN_REVERSE);
     lv_obj_set_flex_align(ui_Container1, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
     lv_obj_clear_flag(ui_Container1, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_opa(ui_Container1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_dateMonthPanel = lv_obj_create(ui_Container1);
     lv_obj_set_width(ui_dateMonthPanel, lv_pct(100));
@@ -152,7 +152,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_x(ui_hours, -6);
     lv_obj_set_y(ui_hours, -10);
     lv_obj_set_align(ui_hours, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_hours, "bruh");
+    lv_label_set_text(ui_hours, "00:00");
     lv_obj_set_style_text_letter_space(ui_hours, -7, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_line_space(ui_hours, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui_hours, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -294,11 +294,11 @@ void ui_mainTime_screen_init(void)
     lv_obj_remove_style_all(ui_Container2);
     lv_obj_set_width(ui_Container2, lv_pct(40));
     lv_obj_set_height(ui_Container2, lv_pct(100));
-    lv_obj_set_x(ui_Container2, 140);
+    lv_obj_set_x(ui_Container2, 200);
     lv_obj_set_y(ui_Container2, 0);
-    lv_obj_set_align(ui_Container2, LV_ALIGN_CENTER);
+    lv_obj_set_align(ui_Container2, LV_ALIGN_RIGHT_MID);
     lv_obj_set_flex_flow(ui_Container2, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(ui_Container2, LV_FLEX_ALIGN_SPACE_AROUND, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+    lv_obj_set_flex_align(ui_Container2, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_clear_flag(ui_Container2, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_CalendarMain = lv_calendar_create(ui_Container2);

@@ -65,6 +65,7 @@ void ui_alarmRang_screen_init(void)
 {
     ui_alarmRang = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_alarmRang, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_event_cb(ui_alarmRang, scr_unloaded_delete_cb, LV_EVENT_SCREEN_UNLOADED, ui_alarmRang_screen_destroy);
     lv_obj_set_style_bg_grad_color(ui_alarmRang, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_alarmRang, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 

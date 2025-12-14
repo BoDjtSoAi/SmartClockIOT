@@ -29,6 +29,7 @@ extern "C" {
 
 ///////////////////// SCREENS ////////////////////
 
+#include "ui_Screen3.h"
 #include "ui_mainTime.h"
 #include "ui_alarmRang.h"
 
@@ -41,12 +42,14 @@ extern lv_anim_t * alarmRang3_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * alarmRang4_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * ambientHome_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * homeFlyIn_Animation(lv_obj_t * TargetObject, int delay);
+extern lv_anim_t * booting_Animation(lv_obj_t * TargetObject, int delay);
 
 // EVENTS
 
 extern lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
+LV_IMG_DECLARE(ui_img_1728762676);    // assets/ezgif-split/frame_00.png
 LV_IMG_DECLARE(ui_img_weather_icon_png);    // assets/weather_icon.png
 LV_IMG_DECLARE(ui_img_roomtemp_png);    // assets/roomTemp.png
 LV_IMG_DECLARE(ui_img_alarm_png);    // assets/alarm.png
@@ -57,6 +60,22 @@ LV_IMG_DECLARE(ui_img_weather_icon_2_png);    // assets/weather_icon_2.png
 LV_IMG_DECLARE(ui_img_alarmicon_png);    // assets/ALARMicon.png
 LV_IMG_DECLARE(ui_img_button_dissmiss_png);    // assets/BUTTON_DIssmiss.png
 LV_IMG_DECLARE(ui_img_buttonsnooze_png);    // assets/buttonSnooze.png
+LV_IMG_DECLARE(ui_img_1728761651);    // assets/ezgif-split/frame_01.png
+LV_IMG_DECLARE(ui_img_1728760626);    // assets/ezgif-split/frame_02.png
+LV_IMG_DECLARE(ui_img_1728768049);    // assets/ezgif-split/frame_03.png
+LV_IMG_DECLARE(ui_img_1728758328);    // assets/ezgif-split/frame_04.png
+LV_IMG_DECLARE(ui_img_1728757303);    // assets/ezgif-split/frame_05.png
+LV_IMG_DECLARE(ui_img_1728756278);    // assets/ezgif-split/frame_06.png
+LV_IMG_DECLARE(ui_img_1728763701);    // assets/ezgif-split/frame_07.png
+LV_IMG_DECLARE(ui_img_1728771388);    // assets/ezgif-split/frame_08.png
+LV_IMG_DECLARE(ui_img_1728770363);    // assets/ezgif-split/frame_09.png
+LV_IMG_DECLARE(ui_img_920901967);    // assets/ezgif-split/frame_10.png
+LV_IMG_DECLARE(ui_img_920900942);    // assets/ezgif-split/frame_11.png
+LV_IMG_DECLARE(ui_img_920899917);    // assets/ezgif-split/frame_12.png
+LV_IMG_DECLARE(ui_img_920907340);    // assets/ezgif-split/frame_13.png
+LV_IMG_DECLARE(ui_img_920896594);    // assets/ezgif-split/frame_15.png
+LV_IMG_DECLARE(ui_img_920895569);    // assets/ezgif-split/frame_16.png
+LV_IMG_DECLARE(ui_img_920902992);    // assets/ezgif-split/frame_17.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_alarmBig);
