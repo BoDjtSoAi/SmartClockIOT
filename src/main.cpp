@@ -179,7 +179,7 @@ void setup()
 
     // --- 6. Init UI ---
     ui_init();
-    System_Init();
+    Serial.println("Setup done");
 }
 
 void loop()
