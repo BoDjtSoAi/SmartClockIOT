@@ -7,6 +7,10 @@
 #include <Preferences.h>
 #include "UI/ui.h"
 
+// WiFi credentials
+static const char* WIFI_SSID = "Mahihi";
+static const char* WIFI_PASS = "09092004";
+
 #define BUZZER_PIN 4
 #define SQW_PIN 5
 
@@ -117,18 +121,28 @@ void callback(char *topic, byte *payload, unsigned int length)
 
 void mqttTask(void *parameter)
 {
+  // Non-blocking loop: ensure WiFi is actively retried here and MQTT connects when possible.
+  static unsigned long lastWiFiAttempt = 0;
   for (;;)
   {
+    // If WiFi is disconnected, try to (re)start the connection periodically.
+    if (WiFi.status() != WL_CONNECTED)
+    {
+      unsigned long now = millis();
+      if (now - lastWiFiAttempt >= wifiReconnectInterval)
+      {
+        lastWiFiAttempt = now;
+        Serial.println("[WIFI] Not connected, attempting WiFi.begin()...");
+        WiFi.disconnect();
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+      }
+      // Wait a bit and continue; MQTT cannot connect without WiFi.
+      vTaskDelay(pdMS_TO_TICKS(200));
+      continue;
+    }
 
     if (!client.connected())
     {
-
-      if (WiFi.status() != WL_CONNECTED)
-      {
-        vTaskDelay(pdMS_TO_TICKS(10));
-        continue;
-      }
-
       String clientId = "ESP32Client-";
       clientId += String(random(0xffff), HEX);
 
@@ -139,6 +153,12 @@ void mqttTask(void *parameter)
         client.subscribe(topic_sub_set_clock);
         client.subscribe(topic_arlarm_set);
         Serial.println("[MQTT] Connected & Subscribed");
+      }
+      else
+      {
+        // Back off a bit before retrying MQTT connect
+        vTaskDelay(pdMS_TO_TICKS(500));
+        continue;
       }
     }
 
@@ -366,24 +386,10 @@ void System_Init()
 
   // WiFi
   WiFi.setSleep(false);
-  WiFi.begin("Mahihi", "09092004");
-
-  int retry = 0;
-  while (WiFi.status() != WL_CONNECTED && retry < 50) // 15 seconds timeout
-  {
-    delay(300);
-    Serial.print(".");
-    retry++;
-  }
-
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    Serial.println("\n[System] WiFi Connected");
-  }
-  else
-  {
-    Serial.println("\n[System] WiFi Connection Failed");
-  }
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  // Start WiFi connection in non-blocking mode and continue boot.
+  // The mqttTask() will handle reconnects and final subscription when WiFi is available.
+  Serial.println("[System] WiFi begin (non-blocking)");
 
   // MQTT
   client.setServer(mqtt_server, mqtt_port);
@@ -487,7 +493,7 @@ void System_Handle_Loop()
       {
         lastTimeConnectWifi = currentMillis;
         WiFi.disconnect();
-        WiFi.begin("Mahihi", "09092004");
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
       }
     }
   }

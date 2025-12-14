@@ -37,10 +37,13 @@ static int last_day_setup = -1;
 #define SCREEN_WIDTH 480
 #define SCREEN_HEIGHT 320
 
-// 1/10 Screen Buffer (Tối ưu cho SPI DMA)
-#define BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10)
+// 1/5 Screen Buffer (Tối ưu cho SPI DMA) - larger buffer to reduce partial flushes
+// Increased from /10 to /5 to decrease number of DMA pushes per full-screen render.
+#define BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 5)
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf[BUF_SIZE];
+// Second buffer for double buffering. Improves concurrency between LVGL rendering and DMA.
+static lv_color_t buf2[BUF_SIZE];
 
 // --- LGFX Instance ---
 LGFX tft;
@@ -57,7 +60,6 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
     }
     // Đẩy dữ liệu qua DMA
     tft.pushImageDMA(area->x1, area->y1, w, h, (uint16_t *)&color_p->full);
-
     lv_disp_flush_ready(disp);
 }
 
@@ -170,7 +172,8 @@ void setup()
 
     // --- 3. Init LVGL ---
     lv_init();
-    lv_disp_draw_buf_init(&draw_buf, buf, NULL, BUF_SIZE);
+    // Use double buffering: buf and buf2
+    lv_disp_draw_buf_init(&draw_buf, buf, buf2, BUF_SIZE);
 
     // --- 4. Register Display Driver (LVGL 8 Syntax) ---
     static lv_disp_drv_t disp_drv;
