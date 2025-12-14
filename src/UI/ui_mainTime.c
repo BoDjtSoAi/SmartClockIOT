@@ -65,8 +65,6 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_style_bg_color(ui_mainTime, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_mainTime, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_color(ui_mainTime, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_main_stop(ui_mainTime, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_stop(ui_mainTime, 222, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_mainTime, LV_GRAD_DIR_HOR, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Container1 = lv_obj_create(ui_mainTime);
@@ -265,7 +263,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_y(ui_Container2, 0);
     lv_obj_set_align(ui_Container2, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_Container2, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(ui_Container2, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+    lv_obj_set_flex_align(ui_Container2, LV_FLEX_ALIGN_SPACE_AROUND, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
     lv_obj_clear_flag(ui_Container2, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_CalendarMain = lv_calendar_create(ui_Container2);
@@ -274,13 +272,13 @@ void ui_mainTime_screen_init(void)
     lv_obj_t * ui_CalendarMain_header = lv_calendar_header_arrow_create(ui_CalendarMain);
     lv_obj_set_width(ui_CalendarMain, lv_pct(100));
     lv_obj_set_height(ui_CalendarMain, lv_pct(70));
+    lv_obj_set_align(ui_CalendarMain, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_CalendarMain, LV_FLEX_FLOW_COLUMN_REVERSE);
     lv_obj_set_flex_align(ui_CalendarMain, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
     lv_obj_set_style_bg_color(ui_CalendarMain, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_CalendarMain, 7, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_CalendarMain, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_outline_width(ui_CalendarMain, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_outline_pad(ui_CalendarMain, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_blend_mode(ui_CalendarMain, LV_BLEND_MODE_ADDITIVE, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui_CalendarMain, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_right(ui_CalendarMain, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_top(ui_CalendarMain, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -365,8 +363,6 @@ void ui_mainTime_screen_init(void)
     lv_obj_add_flag(ui_wifiIcon, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_wifiIcon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_img_set_zoom(ui_wifiIcon, 115);
-    lv_obj_set_style_img_recolor(ui_wifiIcon, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_img_recolor_opa(ui_wifiIcon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_powerIcon = lv_img_create(ui_Container3);
     lv_img_set_src(ui_powerIcon, &ui_img_powered_png);

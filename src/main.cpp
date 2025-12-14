@@ -15,6 +15,7 @@ RTC_DS3231 rtc;
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 char monthsOfTheYear[12][10] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 static int last_month_setup = -1;
+static int last_day_setup = -1;
 
 // --- Display & Buffer Config ---
 #define SCREEN_WIDTH 480
@@ -135,7 +136,6 @@ void loop()
     // --- Logic cập nhật đồng hồ (Mỗi 1 giây chạy 1 lần) ---
     static uint32_t last_update = 0;
     static uint32_t last_check = 0; // for wifi status check :)
-    updateWifiStatus();             // Cập nhật trạng thái WiFi mỗi vòng lặp
     if (millis() - last_update >= 1000)
     {
         last_update = millis();
@@ -151,14 +151,22 @@ void loop()
         // 2. Cập nhật lịch
         if (uic_CalendarMain)
         {
-            if (now.month() != last_month_setup)
+            if (now.day() != last_day_setup)
             {
-                // Lệnh này cập nhật tháng/năm hiển thị trên lịch
-                last_month_setup = now.month();
-                lv_calendar_set_showed_date(uic_CalendarMain, now.year(), now.month());
+                {
+                    // Lệnh này cập nhật ngày hiển thị trên lịch
+                    last_day_setup = now.day();
+                    lv_calendar_set_showed_date(uic_CalendarMain, now.year(), now.month());
+                }
+                if (now.month() != last_month_setup)
+                {
+                    // Lệnh này cập nhật tháng/năm hiển thị trên lịch
+                    last_month_setup = now.month();
+                    lv_calendar_set_showed_date(uic_CalendarMain, now.year(), now.month());
+                }
+                // Lệnh này tô màu/đóng khung ngày hôm nay trên lịch
+                lv_calendar_set_today_date(uic_CalendarMain, now.year(), now.month(), now.day());
             }
-            // Lệnh này tô màu/đóng khung ngày hôm nay trên lịch
-            lv_calendar_set_today_date(uic_CalendarMain, now.year(), now.month(), now.day());
         }
 
         // 3. Cập nhật Thứ
@@ -182,7 +190,7 @@ void loop()
         // 6. Cập nhật Nhiệt độ RTC
         if (uic_rtcTemp)
         {
-            String temp = String(rtc.getTemperature(), 1) + " 'C";
+            String temp = String(rtc.getTemperature(), 1) + "'C";
             lv_label_set_text(uic_rtcTemp, temp.c_str());
         }
     }
