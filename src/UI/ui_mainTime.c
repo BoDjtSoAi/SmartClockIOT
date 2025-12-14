@@ -5,6 +5,7 @@
 
 #include "ui.h"
 
+lv_obj_t * uic_wifiIcon;
 lv_obj_t * uic_alarmTime;
 lv_obj_t * uic_alarmStatus;
 lv_obj_t * uic_alarm;
@@ -44,14 +45,14 @@ lv_obj_t * ui_indoorStatus = NULL;
 lv_obj_t * ui_Container2 = NULL;
 lv_obj_t * ui_CalendarMain = NULL;
 lv_obj_t * ui_Panel1 = NULL;
-lv_obj_t * ui_Image1 = NULL;
+lv_obj_t * ui_alarmIcon = NULL;
 lv_obj_t * ui_alarm = NULL;
 lv_obj_t * ui_alarmStatus = NULL;
 lv_obj_t * ui_alarmTime = NULL;
 lv_obj_t * ui_Container3 = NULL;
 lv_obj_t * ui_Panel2 = NULL;
-lv_obj_t * ui_Image4 = NULL;
-lv_obj_t * ui_Image5 = NULL;
+lv_obj_t * ui_wifiIcon = NULL;
+lv_obj_t * ui_powerIcon = NULL;
 lv_obj_t * ui_Label3 = NULL;
 // event funtions
 
@@ -298,16 +299,16 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_style_bg_opa(ui_Panel1, 7, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(ui_Panel1, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Image1 = lv_img_create(ui_Panel1);
-    lv_img_set_src(ui_Image1, &ui_img_alarm_png);
-    lv_obj_set_width(ui_Image1, LV_SIZE_CONTENT);   /// 80
-    lv_obj_set_height(ui_Image1, LV_SIZE_CONTENT);    /// 80
-    lv_obj_set_x(ui_Image1, -68);
-    lv_obj_set_y(ui_Image1, 0);
-    lv_obj_set_align(ui_Image1, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image1, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_Image1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_img_set_zoom(ui_Image1, 125);
+    ui_alarmIcon = lv_img_create(ui_Panel1);
+    lv_img_set_src(ui_alarmIcon, &ui_img_alarm_png);
+    lv_obj_set_width(ui_alarmIcon, LV_SIZE_CONTENT);   /// 80
+    lv_obj_set_height(ui_alarmIcon, LV_SIZE_CONTENT);    /// 80
+    lv_obj_set_x(ui_alarmIcon, -68);
+    lv_obj_set_y(ui_alarmIcon, 0);
+    lv_obj_set_align(ui_alarmIcon, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_alarmIcon, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_alarmIcon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_img_set_zoom(ui_alarmIcon, 125);
 
     ui_alarm = lv_obj_create(ui_Panel1);
     lv_obj_remove_style_all(ui_alarm);
@@ -333,7 +334,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_width(ui_alarmTime, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_alarmTime, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_alarmTime, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_alarmTime, "88:88");
+    lv_label_set_text(ui_alarmTime, "--:--");
 
     ui_Container3 = lv_obj_create(ui_Panel1);
     lv_obj_remove_style_all(ui_Container3);
@@ -354,34 +355,36 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_style_border_color(ui_Panel2, lv_color_hex(0x666666), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(ui_Panel2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Image4 = lv_img_create(ui_Container3);
-    lv_img_set_src(ui_Image4, &ui_img_wifion_png);
-    lv_obj_set_width(ui_Image4, LV_SIZE_CONTENT);   /// 40
-    lv_obj_set_height(ui_Image4, LV_SIZE_CONTENT);    /// 48
-    lv_obj_set_x(ui_Image4, -28);
-    lv_obj_set_y(ui_Image4, 0);
-    lv_obj_set_align(ui_Image4, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image4, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_Image4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_img_set_zoom(ui_Image4, 115);
+    ui_wifiIcon = lv_img_create(ui_Container3);
+    lv_img_set_src(ui_wifiIcon, &ui_img_wifion_png);
+    lv_obj_set_width(ui_wifiIcon, LV_SIZE_CONTENT);   /// 40
+    lv_obj_set_height(ui_wifiIcon, LV_SIZE_CONTENT);    /// 48
+    lv_obj_set_x(ui_wifiIcon, -28);
+    lv_obj_set_y(ui_wifiIcon, 0);
+    lv_obj_set_align(ui_wifiIcon, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_wifiIcon, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_wifiIcon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_img_set_zoom(ui_wifiIcon, 115);
+    lv_obj_set_style_img_recolor(ui_wifiIcon, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_img_recolor_opa(ui_wifiIcon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Image5 = lv_img_create(ui_Container3);
-    lv_img_set_src(ui_Image5, &ui_img_powered_png);
-    lv_obj_set_width(ui_Image5, LV_SIZE_CONTENT);   /// 40
-    lv_obj_set_height(ui_Image5, LV_SIZE_CONTENT);    /// 48
-    lv_obj_set_x(ui_Image5, 5);
-    lv_obj_set_y(ui_Image5, 0);
-    lv_obj_set_align(ui_Image5, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image5, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_Image5, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_img_set_zoom(ui_Image5, 115);
+    ui_powerIcon = lv_img_create(ui_Container3);
+    lv_img_set_src(ui_powerIcon, &ui_img_powered_png);
+    lv_obj_set_width(ui_powerIcon, LV_SIZE_CONTENT);   /// 40
+    lv_obj_set_height(ui_powerIcon, LV_SIZE_CONTENT);    /// 48
+    lv_obj_set_x(ui_powerIcon, 1);
+    lv_obj_set_y(ui_powerIcon, 0);
+    lv_obj_set_align(ui_powerIcon, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_powerIcon, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_powerIcon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_img_set_zoom(ui_powerIcon, 115);
 
     ui_Label3 = lv_label_create(ui_Container3);
     lv_obj_set_width(ui_Label3, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label3, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label3, 59);
+    lv_obj_set_x(ui_Label3, 55);
     lv_obj_set_y(ui_Label3, 2);
-    lv_label_set_text(ui_Label3, "100%");
+    lv_label_set_text(ui_Label3, "5V|1A");
     lv_obj_set_style_text_font(ui_Label3, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     uic_mainTime = ui_mainTime;
@@ -402,6 +405,7 @@ void ui_mainTime_screen_init(void)
     uic_alarm = ui_alarm;
     uic_alarmStatus = ui_alarmStatus;
     uic_alarmTime = ui_alarmTime;
+    uic_wifiIcon = ui_wifiIcon;
 
 }
 
@@ -446,7 +450,7 @@ void ui_mainTime_screen_destroy(void)
     uic_CalendarMain = NULL;
     ui_CalendarMain = NULL;
     ui_Panel1 = NULL;
-    ui_Image1 = NULL;
+    ui_alarmIcon = NULL;
     uic_alarm = NULL;
     ui_alarm = NULL;
     uic_alarmStatus = NULL;
@@ -455,8 +459,9 @@ void ui_mainTime_screen_destroy(void)
     ui_alarmTime = NULL;
     ui_Container3 = NULL;
     ui_Panel2 = NULL;
-    ui_Image4 = NULL;
-    ui_Image5 = NULL;
+    uic_wifiIcon = NULL;
+    ui_wifiIcon = NULL;
+    ui_powerIcon = NULL;
     ui_Label3 = NULL;
 
 }

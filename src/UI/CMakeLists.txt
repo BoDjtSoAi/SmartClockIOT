@@ -1,4 +1,7 @@
 SET(SOURCES ui_mainTime.c
+    ui_alarmRang.c
+    ui_theme_manager.c
+    ui_themes.c
     ui.c
     ui_comp_hook.c
     ui_helpers.c
@@ -7,6 +10,12 @@ SET(SOURCES ui_mainTime.c
     ui_img_alarm_png.c
     ui_img_wifion_png.c
     ui_img_powered_png.c
+    ui_img_calendar_png.c
+    ui_img_weather_icon_2_png.c
+    ui_img_alarmicon_png.c
+    ui_img_button_dissmiss_png.c
+    ui_img_buttonsnooze_png.c
+    fonts/ui_font_alarmBig.c
     fonts/ui_font_Heading_1.c
     fonts/ui_font_Heading_2.c
     fonts/ui_font_InterMedium.c

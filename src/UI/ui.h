@@ -24,10 +24,13 @@ extern "C" {
 
 #include "ui_helpers.h"
 #include "ui_events.h"
+#include "ui_theme_manager.h"
+#include "ui_themes.h"
 
 ///////////////////// SCREENS ////////////////////
 
 #include "ui_mainTime.h"
+#include "ui_alarmRang.h"
 
 ///////////////////// VARIABLES ////////////////////
 
@@ -42,8 +45,14 @@ LV_IMG_DECLARE(ui_img_roomtemp_png);    // assets/roomTemp.png
 LV_IMG_DECLARE(ui_img_alarm_png);    // assets/alarm.png
 LV_IMG_DECLARE(ui_img_wifion_png);    // assets/wifiOn.png
 LV_IMG_DECLARE(ui_img_powered_png);    // assets/powered.png
+LV_IMG_DECLARE(ui_img_calendar_png);    // assets/calendar.png
+LV_IMG_DECLARE(ui_img_weather_icon_2_png);    // assets/weather_icon_2.png
+LV_IMG_DECLARE(ui_img_alarmicon_png);    // assets/ALARMicon.png
+LV_IMG_DECLARE(ui_img_button_dissmiss_png);    // assets/BUTTON_DIssmiss.png
+LV_IMG_DECLARE(ui_img_buttonsnooze_png);    // assets/buttonSnooze.png
 
 // FONTS
+LV_FONT_DECLARE(ui_font_alarmBig);
 LV_FONT_DECLARE(ui_font_Heading_1);
 LV_FONT_DECLARE(ui_font_Heading_2);
 LV_FONT_DECLARE(ui_font_InterMedium);

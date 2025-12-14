@@ -34,14 +34,14 @@ extern lv_obj_t * ui_indoorStatus;
 extern lv_obj_t * ui_Container2;
 extern lv_obj_t * ui_CalendarMain;
 extern lv_obj_t * ui_Panel1;
-extern lv_obj_t * ui_Image1;
+extern lv_obj_t * ui_alarmIcon;
 extern lv_obj_t * ui_alarm;
 extern lv_obj_t * ui_alarmStatus;
 extern lv_obj_t * ui_alarmTime;
 extern lv_obj_t * ui_Container3;
 extern lv_obj_t * ui_Panel2;
-extern lv_obj_t * ui_Image4;
-extern lv_obj_t * ui_Image5;
+extern lv_obj_t * ui_wifiIcon;
+extern lv_obj_t * ui_powerIcon;
 extern lv_obj_t * ui_Label3;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_mainTime;
@@ -62,6 +62,7 @@ extern lv_obj_t * uic_CalendarMain;
 extern lv_obj_t * uic_alarm;
 extern lv_obj_t * uic_alarmStatus;
 extern lv_obj_t * uic_alarmTime;
+extern lv_obj_t * uic_wifiIcon;
 
 #ifdef __cplusplus
 } /*extern "C"*/
