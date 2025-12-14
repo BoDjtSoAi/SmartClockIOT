@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <RTClib.h>
 #include <WiFi.h>
+#include "lv_conf.h"
 #include <lvgl.h>
 #include "LGFX_Setup.h"
 #include "ui/ui.h"
@@ -22,6 +23,7 @@ RTC_DS3231 rtc;
 // --- Screen Control Variables ---
 unsigned long lastDetectionTime = 0;
 bool screenOn = true;
+bool rtcStatus = true;
 int currentBrightness = 255;
 int targetBrightness = 255;
 
@@ -86,9 +88,12 @@ float getDistance()
     delayMicroseconds(10);
     digitalWrite(TRIG_PIN, LOW);
 
-    long duration = pulseIn(ECHO_PIN, HIGH, 30000); // Timeout 30ms
+    // Timeout reduced to 5000us (5ms) -> approx 85cm max distance
+    // We only care about < 30cm, so 5ms is plenty.
+    // This prevents blocking the UI for 30ms when no object is detected.
+    long duration = pulseIn(ECHO_PIN, HIGH, 5000);
     if (duration == 0)
-        return 999; // Không đo được
+        return 999; // Không đo được (timeout or too far)
 
     float distance = duration * 0.034 / 2; // cm
     return distance;
@@ -114,21 +119,27 @@ void smoothBrightness()
 
 void updateWifiStatus()
 {
-    // Kiểm tra trạng thái kết nối
-    if (WiFi.status() == WL_CONNECTED)
-    {
+    static bool lastConnected = false;
+    bool currentConnected = (WiFi.status() == WL_CONNECTED);
 
-        // --- TRƯỜNG HỢP 1: CÓ MẠNG ---
-        lv_obj_set_style_img_recolor(uic_wifiIcon, lv_color_hex(0xFFFFFF), 0);
-        lv_obj_set_style_img_recolor_opa(uic_wifiIcon, 255, 0);
-    }
-    else
+    // Only update UI if status changes to avoid unnecessary redraws
+    if (currentConnected != lastConnected)
     {
+        lastConnected = currentConnected;
 
-        // --- TRƯỜNG HỢP 2: MẤT MẠNG ---
-        // Recolor thành màu đỏ đậm + độ đậm 200/255
-        lv_obj_set_style_img_recolor(uic_wifiIcon, lv_color_hex(0xFF0000), 0);
-        lv_obj_set_style_img_recolor_opa(uic_wifiIcon, 200, 0);
+        // Kiểm tra trạng thái kết nối
+        if (currentConnected)
+        {
+            // --- TRƯỜNG HỢP 1: CÓ MẠNG ---
+            lv_obj_set_style_img_recolor(uic_wifiIcon, lv_color_hex(0xFFFFFF), 0);
+            lv_obj_set_style_img_recolor_opa(uic_wifiIcon, 255, 0);
+        }
+        else
+        {
+            // --- TRƯỜNG HỢP 2: MẤT MẠNG ---
+            lv_obj_set_style_img_recolor(uic_wifiIcon, lv_color_hex(0xFF0000), 0);
+            lv_obj_set_style_img_recolor_opa(uic_wifiIcon, 200, 0);
+        }
     }
 }
 
@@ -229,10 +240,41 @@ void loop()
 
         DateTime now = rtc.now();
 
+        // --- SAFETY CHECK: Validate RTC Data ---
+        // If RTC is disconnected, it may return garbage (e.g. month=165), causing a crash when accessing arrays.
+        if (now.month() < 1 || now.month() > 12 || now.day() > 31)
+        {
+            Serial.println("[RTC] Error: Invalid time read (RTC disconnected?)");
+            rtcStatus = false;
+            if (uic_hours)
+                lv_label_set_text(uic_hours, "bruh");
+            if (uic_cityName)
+                lv_label_set_text(uic_cityName, "Moment");
+            if (uic_Container5)
+                lv_obj_set_style_bg_color(uic_Container5, lv_color_hex(0x801928), LV_PART_MAIN | LV_STATE_DEFAULT);
+            if (uic_seconds)
+                lv_label_set_text(uic_seconds, "");
+            if (uic_dayOfWeek)
+                lv_label_set_text(uic_dayOfWeek, "Give that back bro");
+            if (uic_dateMonth)
+                lv_label_set_text(uic_dateMonth, "Check RTC!");
+            if (uic_rtcTemp)
+                lv_label_set_text(uic_rtcTemp, "huhuhu");
+            return; // Skip the rest of the update to prevent crash
+        }
+
         // 1. Cập nhật Ngày/Tháng
         if (uic_dateMonth)
         {
             lv_label_set_text_fmt(uic_dateMonth, "%02d %s", now.day(), monthsOfTheYear[now.month() - 1]);
+            if (!rtcStatus)
+            {
+                if (uic_Container5)
+                    lv_obj_set_style_bg_color(uic_Container5, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
+                if (uic_cityName)
+                lv_label_set_text(uic_cityName, "Love u");
+                rtcStatus = true;
+            }
         }
 
         // 2. Cập nhật lịch

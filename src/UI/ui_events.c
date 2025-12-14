@@ -3,17 +3,21 @@
 // LVGL version: 8.3.11
 // Project name: IOTSmartClock
 
-#ifndef _UI_EVENTS_H
-#define _UI_EVENTS_H
+#include "ui.h"
 
+// Forward declaration for the C++ logic function
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-void dismissAlarmButton(lv_event_t * e);
-
+void dismissAlarm();
 #ifdef __cplusplus
-} /*extern "C"*/
+}
 #endif
 
-#endif
+
+void dismissAlarmButton(lv_event_t * e)
+{
+	// Call the actual logic in MqttService.cpp
+	dismissAlarm();
+}
+

@@ -34,14 +34,12 @@ extern "C" {
 
 ///////////////////// VARIABLES ////////////////////
 
-extern lv_anim_t * ambientAlarm_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * alarmspin_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * alarmRing_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * alarmRing2_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * alarmRang3_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * alarmRang4_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * ambientHome_Animation(lv_obj_t * TargetObject, int delay);
-extern lv_anim_t * StartHome_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * homeFlyIn_Animation(lv_obj_t * TargetObject, int delay);
 
 // EVENTS

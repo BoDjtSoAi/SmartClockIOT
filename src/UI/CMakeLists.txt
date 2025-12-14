@@ -5,6 +5,7 @@ SET(SOURCES ui_mainTime.c
     ui.c
     ui_comp_hook.c
     ui_helpers.c
+    ui_events.c
     ui_img_weather_icon_png.c
     ui_img_roomtemp_png.c
     ui_img_alarm_png.c

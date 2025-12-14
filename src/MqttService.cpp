@@ -268,6 +268,9 @@ void setAlarmFromMQTT(const String &message)
   rtc.setAlarm1(DateTime(2020, 1, 1, alarm1.hour, alarm1.minute, 0), DS3231_A1_Hour);
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void dismissAlarm()
 {
   // Turn off alarm logic
@@ -277,8 +280,11 @@ void dismissAlarm()
   rtc.clearAlarm(1);
 
   // Switch back to main screen
-  lv_disp_load_scr(ui_mainTime);
+  lv_disp_load_scr(uic_mainTime);
 }
+#ifdef __cplusplus
+}
+#endif
 
 //-----------------------------------kiểm tra và xử lý khi có báo thức---------------------------------//
 void checkAlarmTrigger()
@@ -469,14 +475,20 @@ void System_Handle_Loop()
   checkAlarmTrigger();
   System_Handle_Buzzer();
 
-  if (WiFi.status() != WL_CONNECTED)
+  // Throttle WiFi check to avoid overhead every frame
+  static unsigned long lastWifiCheck = 0;
+  if (millis() - lastWifiCheck >= 3000) 
   {
-    unsigned long currentMillis = millis();
-    if (currentMillis - lastTimeConnectWifi >= wifiReconnectInterval)
+    lastWifiCheck = millis();
+    if (WiFi.status() != WL_CONNECTED)
     {
-      lastTimeConnectWifi = currentMillis;
-      WiFi.disconnect();
-      WiFi.begin("Mahihi", "09092004");
+      unsigned long currentMillis = millis();
+      if (currentMillis - lastTimeConnectWifi >= wifiReconnectInterval)
+      {
+        lastTimeConnectWifi = currentMillis;
+        WiFi.disconnect();
+        WiFi.begin("Mahihi", "09092004");
+      }
     }
   }
 }

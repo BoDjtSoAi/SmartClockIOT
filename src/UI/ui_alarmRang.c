@@ -13,7 +13,6 @@ lv_obj_t * uic_headerRight;
 lv_obj_t * uic_dowDate;
 lv_obj_t * uic_headerLeft;
 lv_obj_t * ui_alarmRang = NULL;
-lv_obj_t * ui_background = NULL;
 lv_obj_t * ui_headerLeft = NULL;
 lv_obj_t * ui_Image6 = NULL;
 lv_obj_t * ui_dowDate = NULL;
@@ -36,19 +35,9 @@ void ui_event_alarmRang(lv_event_t * e)
         alarmRing2_Animation(ui_Container6, 0);
         alarmRing_Animation(ui_headerRight, 0);
         alarmspin_Animation(ui_Image7, 0);
-        ambientAlarm_Animation(ui_background, 0);
         alarmRing_Animation(ui_headerLeft, 0);
         alarmRang3_Animation(ui_Image8, 0);
         alarmRang4_Animation(ui_Label4, 0);
-    }
-}
-
-void ui_event_background(lv_event_t * e)
-{
-    lv_event_code_t event_code = lv_event_get_code(e);
-
-    if(event_code == LV_EVENT_SCREEN_LOADED) {
-        ambientAlarm_Animation(ui_background, 0);
     }
 }
 
@@ -61,6 +50,15 @@ void ui_event_headerLeft(lv_event_t * e)
     }
 }
 
+void ui_event_alarmDismiss(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        dismissAlarmButton(e);
+    }
+}
+
 // build funtions
 
 void ui_alarmRang_screen_init(void)
@@ -69,19 +67,6 @@ void ui_alarmRang_screen_init(void)
     lv_obj_clear_flag(ui_alarmRang, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_grad_color(ui_alarmRang, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_alarmRang, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_background = lv_obj_create(ui_alarmRang);
-    lv_obj_remove_style_all(ui_background);
-    lv_obj_set_width(ui_background, lv_pct(100));
-    lv_obj_set_height(ui_background, lv_pct(36));
-    lv_obj_set_align(ui_background, LV_ALIGN_TOP_MID);
-    lv_obj_clear_flag(ui_background, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_background, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_background, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_dir(ui_background, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_clip_corner(ui_background, false, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_blend_mode(ui_background, LV_BLEND_MODE_ADDITIVE, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_background, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_headerLeft = lv_obj_create(ui_alarmRang);
     lv_obj_remove_style_all(ui_headerLeft);
@@ -198,8 +183,8 @@ void ui_alarmRang_screen_init(void)
     lv_obj_set_height(ui_alarmSnooze, 81);
     lv_obj_set_align(ui_alarmSnooze, LV_ALIGN_RIGHT_MID);
 
-    lv_obj_add_event_cb(ui_background, ui_event_background, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_headerLeft, ui_event_headerLeft, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_alarmDismiss, ui_event_alarmDismiss, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_alarmRang, ui_event_alarmRang, LV_EVENT_ALL, NULL);
     uic_headerLeft = ui_headerLeft;
     uic_dowDate = ui_dowDate;
@@ -217,7 +202,6 @@ void ui_alarmRang_screen_destroy(void)
 
     // NULL screen variables
     ui_alarmRang = NULL;
-    ui_background = NULL;
     uic_headerLeft = NULL;
     ui_headerLeft = NULL;
     ui_Image6 = NULL;

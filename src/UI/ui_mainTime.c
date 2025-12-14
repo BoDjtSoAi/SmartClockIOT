@@ -24,10 +24,10 @@ lv_obj_t * uic_timePanel;
 lv_obj_t * uic_dateMonth;
 lv_obj_t * uic_dayOfWeek;
 lv_obj_t * uic_dateMonthPanel;
+lv_obj_t * uic_Container5;
 lv_obj_t * uic_mainTime;
 lv_obj_t * ui_mainTime = NULL;
 lv_obj_t * ui_Container5 = NULL;
-lv_obj_t * ui_Container7 = NULL;
 lv_obj_t * ui_Container1 = NULL;
 lv_obj_t * ui_dateMonthPanel = NULL;
 lv_obj_t * ui_dayOfWeek = NULL;
@@ -64,10 +64,9 @@ void ui_event_mainTime(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_SCREEN_LOADED) {
-        ambientHome_Animation(ui_Container7, 0);
-        StartHome_Animation(ui_Container1, 0);
+        ambientHome_Animation(ui_Container1, 0);
         homeFlyIn_Animation(ui_Container2, 0);
-        StartHome_Animation(ui_Container2, 0);
+        ambientHome_Animation(ui_Container2, 0);
     }
 }
 
@@ -89,19 +88,6 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_style_bg_main_stop(ui_Container5, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_stop(ui_Container5, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_Container5, LV_GRAD_DIR_HOR, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Container7 = lv_obj_create(ui_mainTime);
-    lv_obj_remove_style_all(ui_Container7);
-    lv_obj_set_width(ui_Container7, lv_pct(68));
-    lv_obj_set_height(ui_Container7, lv_pct(100));
-    lv_obj_set_align(ui_Container7, LV_ALIGN_RIGHT_MID);
-    lv_obj_clear_flag(ui_Container7, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_Container7, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_Container7, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_color(ui_Container7, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_dir(ui_Container7, LV_GRAD_DIR_HOR, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_blend_mode(ui_Container7, LV_BLEND_MODE_ADDITIVE, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_Container7, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Container1 = lv_obj_create(ui_mainTime);
     lv_obj_remove_style_all(ui_Container1);
@@ -130,7 +116,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_height(ui_dayOfWeek, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_dayOfWeek, -13);
     lv_obj_set_y(ui_dayOfWeek, -18);
-    lv_label_set_text(ui_dayOfWeek, "WEDNESDAY");
+    lv_label_set_text(ui_dayOfWeek, "STARTING");
     lv_obj_set_style_text_color(ui_dayOfWeek, lv_color_hex(0x137FEC), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_dayOfWeek, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_letter_space(ui_dayOfWeek, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -143,7 +129,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_x(ui_dateMonth, -16);
     lv_obj_set_y(ui_dateMonth, 10);
     lv_obj_set_align(ui_dateMonth, LV_ALIGN_BOTTOM_LEFT);
-    lv_label_set_text(ui_dateMonth, "October 24");
+    lv_label_set_text(ui_dateMonth, "PROJECT...");
     lv_obj_set_style_text_letter_space(ui_dateMonth, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_line_space(ui_dateMonth, 40, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_dateMonth, &ui_font_Heading_1, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -151,11 +137,9 @@ void ui_mainTime_screen_init(void)
     ui_timePanel = lv_obj_create(ui_Container1);
     lv_obj_set_width(ui_timePanel, lv_pct(100));
     lv_obj_set_height(ui_timePanel, lv_pct(50));
-    lv_obj_set_x(ui_timePanel, 2);
-    lv_obj_set_y(ui_timePanel, -1);
+    lv_obj_set_x(ui_timePanel, -7);
+    lv_obj_set_y(ui_timePanel, -25);
     lv_obj_set_align(ui_timePanel, LV_ALIGN_LEFT_MID);
-    lv_obj_set_flex_flow(ui_timePanel, LV_FLEX_FLOW_COLUMN_WRAP);
-    lv_obj_set_flex_align(ui_timePanel, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_SPACE_EVENLY);
     lv_obj_clear_flag(ui_timePanel, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_timePanel, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_timePanel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -165,10 +149,10 @@ void ui_mainTime_screen_init(void)
     ui_hours = lv_label_create(ui_timePanel);
     lv_obj_set_width(ui_hours, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_hours, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_hours, -27);
-    lv_obj_set_y(ui_hours, 2);
+    lv_obj_set_x(ui_hours, -6);
+    lv_obj_set_y(ui_hours, -10);
     lv_obj_set_align(ui_hours, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_hours, "88:88");
+    lv_label_set_text(ui_hours, "bruh");
     lv_obj_set_style_text_letter_space(ui_hours, -7, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_line_space(ui_hours, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui_hours, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -177,12 +161,15 @@ void ui_mainTime_screen_init(void)
     ui_seconds = lv_label_create(ui_timePanel);
     lv_obj_set_width(ui_seconds, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_seconds, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_seconds, 66);
-    lv_obj_set_y(ui_seconds, 166);
+    lv_obj_set_x(ui_seconds, 183);
+    lv_obj_set_y(ui_seconds, -30);
     lv_obj_set_align(ui_seconds, LV_ALIGN_BOTTOM_LEFT);
     lv_label_set_text(ui_seconds, ":88");
+    lv_obj_add_flag(ui_seconds, LV_OBJ_FLAG_FLOATING);     /// Flags
     lv_obj_set_style_text_color(ui_seconds, lv_color_hex(0x106ECC), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_seconds, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_letter_space(ui_seconds, -4, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_line_space(ui_seconds, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_seconds, &ui_font_InterSmall, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_cityName = lv_label_create(ui_timePanel);
@@ -191,13 +178,15 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_x(ui_cityName, 0);
     lv_obj_set_y(ui_cityName, 57);
     lv_obj_set_align(ui_cityName, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_cityName, "Ho Chi Minh City");
+    lv_label_set_text(ui_cityName, "GROUP 1's PROJECT");
     lv_obj_add_flag(ui_cityName, LV_OBJ_FLAG_FLOATING);     /// Flags
     lv_obj_set_style_text_font(ui_cityName, &ui_font_interTemp, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_tempaturePanel = lv_obj_create(ui_Container1);
     lv_obj_set_width(ui_tempaturePanel, lv_pct(100));
     lv_obj_set_height(ui_tempaturePanel, lv_pct(25));
+    lv_obj_set_x(ui_tempaturePanel, -2);
+    lv_obj_set_y(ui_tempaturePanel, 18);
     lv_obj_set_align(ui_tempaturePanel, LV_ALIGN_BOTTOM_LEFT);
     lv_obj_clear_flag(ui_tempaturePanel, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_tempaturePanel, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -236,7 +225,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_height(ui_weatherTemp, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_weatherTemp, 42);
     lv_obj_set_y(ui_weatherTemp, -6);
-    lv_label_set_text(ui_weatherTemp, "38'C");
+    lv_label_set_text(ui_weatherTemp, "----------");
     lv_obj_set_style_text_font(ui_weatherTemp, &ui_font_interTemp, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_weatherStatus = lv_label_create(ui_tempaturePanel);
@@ -244,7 +233,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_height(ui_weatherStatus, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_weatherStatus, 42);
     lv_obj_set_y(ui_weatherStatus, 19);
-    lv_label_set_text(ui_weatherStatus, "Clear and Sunny");
+    lv_label_set_text(ui_weatherStatus, "Please Wait");
     lv_obj_set_style_text_color(ui_weatherStatus, lv_color_hex(0x9CA3AF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_weatherStatus, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_weatherStatus, &ui_font_weatherText, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -288,7 +277,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_height(ui_rtcTemp, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_rtcTemp, 187);
     lv_obj_set_y(ui_rtcTemp, -5);
-    lv_label_set_text(ui_rtcTemp, "38'C");
+    lv_label_set_text(ui_rtcTemp, "--------");
     lv_obj_set_style_text_font(ui_rtcTemp, &ui_font_interTemp, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_indoorStatus = lv_label_create(ui_tempaturePanel);
@@ -296,7 +285,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_height(ui_indoorStatus, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_indoorStatus, 188);
     lv_obj_set_y(ui_indoorStatus, 21);
-    lv_label_set_text(ui_indoorStatus, "Indoor");
+    lv_label_set_text(ui_indoorStatus, "Indoor Temp");
     lv_obj_set_style_text_color(ui_indoorStatus, lv_color_hex(0x9CA3AF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_indoorStatus, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_indoorStatus, &ui_font_weatherText, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -409,6 +398,8 @@ void ui_mainTime_screen_init(void)
     lv_obj_add_flag(ui_wifiIcon, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_wifiIcon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_img_set_zoom(ui_wifiIcon, 115);
+    lv_obj_set_style_img_recolor(ui_wifiIcon, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_img_recolor_opa(ui_wifiIcon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_powerIcon = lv_img_create(ui_Container3);
     lv_img_set_src(ui_powerIcon, &ui_img_powered_png);
@@ -431,6 +422,7 @@ void ui_mainTime_screen_init(void)
 
     lv_obj_add_event_cb(ui_mainTime, ui_event_mainTime, LV_EVENT_ALL, NULL);
     uic_mainTime = ui_mainTime;
+    uic_Container5 = ui_Container5;
     uic_dateMonthPanel = ui_dateMonthPanel;
     uic_dayOfWeek = ui_dayOfWeek;
     uic_dateMonth = ui_dateMonth;
@@ -460,8 +452,8 @@ void ui_mainTime_screen_destroy(void)
     // NULL screen variables
     uic_mainTime = NULL;
     ui_mainTime = NULL;
+    uic_Container5 = NULL;
     ui_Container5 = NULL;
-    ui_Container7 = NULL;
     ui_Container1 = NULL;
     uic_dateMonthPanel = NULL;
     ui_dateMonthPanel = NULL;
