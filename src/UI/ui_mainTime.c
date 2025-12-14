@@ -17,6 +17,7 @@ lv_obj_t * uic_weatherStatus;
 lv_obj_t * uic_weatherTemp;
 lv_obj_t * uic_weatherIcon;
 lv_obj_t * uic_tempaturePanel;
+lv_obj_t * uic_cityName;
 lv_obj_t * uic_seconds;
 lv_obj_t * uic_hours;
 lv_obj_t * uic_timePanel;
@@ -34,7 +35,7 @@ lv_obj_t * ui_dateMonth = NULL;
 lv_obj_t * ui_timePanel = NULL;
 lv_obj_t * ui_hours = NULL;
 lv_obj_t * ui_seconds = NULL;
-lv_obj_t * ui_Label1 = NULL;
+lv_obj_t * ui_cityName = NULL;
 lv_obj_t * ui_tempaturePanel = NULL;
 lv_obj_t * ui_weatherIcon = NULL;
 lv_obj_t * ui_Image2 = NULL;
@@ -184,15 +185,15 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_style_text_opa(ui_seconds, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_seconds, &ui_font_InterSmall, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Label1 = lv_label_create(ui_timePanel);
-    lv_obj_set_width(ui_Label1, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label1, 0);
-    lv_obj_set_y(ui_Label1, 57);
-    lv_obj_set_align(ui_Label1, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_Label1, "Ho Chi Minh City");
-    lv_obj_add_flag(ui_Label1, LV_OBJ_FLAG_FLOATING);     /// Flags
-    lv_obj_set_style_text_font(ui_Label1, &ui_font_interTemp, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_cityName = lv_label_create(ui_timePanel);
+    lv_obj_set_width(ui_cityName, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_cityName, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_cityName, 0);
+    lv_obj_set_y(ui_cityName, 57);
+    lv_obj_set_align(ui_cityName, LV_ALIGN_LEFT_MID);
+    lv_label_set_text(ui_cityName, "Ho Chi Minh City");
+    lv_obj_add_flag(ui_cityName, LV_OBJ_FLAG_FLOATING);     /// Flags
+    lv_obj_set_style_text_font(ui_cityName, &ui_font_interTemp, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_tempaturePanel = lv_obj_create(ui_Container1);
     lv_obj_set_width(ui_tempaturePanel, lv_pct(100));
@@ -436,6 +437,7 @@ void ui_mainTime_screen_init(void)
     uic_timePanel = ui_timePanel;
     uic_hours = ui_hours;
     uic_seconds = ui_seconds;
+    uic_cityName = ui_cityName;
     uic_tempaturePanel = ui_tempaturePanel;
     uic_weatherIcon = ui_weatherIcon;
     uic_weatherTemp = ui_weatherTemp;
@@ -473,7 +475,8 @@ void ui_mainTime_screen_destroy(void)
     ui_hours = NULL;
     uic_seconds = NULL;
     ui_seconds = NULL;
-    ui_Label1 = NULL;
+    uic_cityName = NULL;
+    ui_cityName = NULL;
     uic_tempaturePanel = NULL;
     ui_tempaturePanel = NULL;
     uic_weatherIcon = NULL;
