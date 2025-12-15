@@ -13,6 +13,7 @@ extern "C" {
 // SCREEN: ui_settingsWifi
 extern void ui_settingsWifi_screen_init(void);
 extern void ui_settingsWifi_screen_destroy(void);
+extern void ui_event_settingsWifi(lv_event_t * e);
 extern lv_obj_t * ui_settingsWifi;
 extern lv_obj_t * ui_settingHeader1;
 extern lv_obj_t * ui_settingHeaderSmall1;
@@ -28,15 +29,19 @@ extern void ui_event_ssidPwd(lv_event_t * e);
 extern lv_obj_t * ui_ssidPwd;
 extern lv_obj_t * ui_Container10;
 extern lv_obj_t * ui_setting9;
-extern void ui_event_Button1(lv_event_t * e);
-extern lv_obj_t * ui_Button1;
-extern lv_obj_t * ui_Label16;
+extern void ui_event_saveSetting(lv_event_t * e);
+extern lv_obj_t * ui_saveSetting;
+extern lv_obj_t * ui_saveSSID;
+extern void ui_event_ImgButton1(lv_event_t * e);
+extern lv_obj_t * ui_ImgButton1;
 extern void ui_event_Keyboardssid(lv_event_t * e);
 extern lv_obj_t * ui_Keyboardssid;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_settingsWifi;
 extern lv_obj_t * uic_ssid;
 extern lv_obj_t * uic_ssidPwd;
+extern lv_obj_t * uic_saveSetting;
+extern lv_obj_t * uic_saveSSID;
 extern lv_obj_t * uic_Keyboardssid;
 
 #ifdef __cplusplus

@@ -347,6 +347,10 @@ void loop()
         {
             lv_label_set_text_fmt(uic_hours, "%02d:%02d", now.hour(), now.minute());
         }
+        if (uic_systemTime)
+        {
+            lv_label_set_text_fmt(uic_systemTime, "%02d:%02d", now.hour(), now.minute());
+        }
 
         // 5. Cập nhật Giây
         if (uic_seconds)

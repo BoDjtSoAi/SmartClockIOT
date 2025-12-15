@@ -6,6 +6,8 @@
 #include "ui.h"
 
 lv_obj_t * uic_Keyboardssid;
+lv_obj_t * uic_saveSSID;
+lv_obj_t * uic_saveSetting;
 lv_obj_t * uic_ssidPwd;
 lv_obj_t * uic_ssid;
 lv_obj_t * uic_settingsWifi;
@@ -22,17 +24,27 @@ lv_obj_t * ui_Label15 = NULL;
 lv_obj_t * ui_ssidPwd = NULL;
 lv_obj_t * ui_Container10 = NULL;
 lv_obj_t * ui_setting9 = NULL;
-lv_obj_t * ui_Button1 = NULL;
-lv_obj_t * ui_Label16 = NULL;
+lv_obj_t * ui_saveSetting = NULL;
+lv_obj_t * ui_saveSSID = NULL;
+lv_obj_t * ui_ImgButton1 = NULL;
 lv_obj_t * ui_Keyboardssid = NULL;
 // event funtions
+void ui_event_settingsWifi(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_SCREEN_LOADED) {
+        loadWifiSettings(e);
+    }
+}
+
 void ui_event_ssid(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
         _ui_keyboard_set_target(ui_Keyboardssid,  ui_ssid);
-        _ui_flag_modify(ui_Keyboardssid, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
+        _ui_flag_modify(ui_Keyboardssid, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
     }
 }
 
@@ -42,15 +54,28 @@ void ui_event_ssidPwd(lv_event_t * e)
 
     if(event_code == LV_EVENT_CLICKED) {
         _ui_keyboard_set_target(ui_Keyboardssid,  ui_ssidPwd);
+        _ui_flag_modify(ui_Keyboardssid, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
     }
 }
 
-void ui_event_Button1(lv_event_t * e)
+void ui_event_saveSetting(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
         _ui_screen_change(&ui_settings, LV_SCR_LOAD_ANIM_FADE_ON, 400, 5, &ui_settings_screen_init);
+    }
+    if(event_code == LV_EVENT_CLICKED) {
+        saveWifiSettings(e);
+    }
+}
+
+void ui_event_ImgButton1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_settings, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_settings_screen_init);
     }
 }
 
@@ -69,6 +94,7 @@ void ui_settingsWifi_screen_init(void)
 {
     ui_settingsWifi = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_settingsWifi, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_event_cb(ui_settingsWifi, scr_unloaded_delete_cb, LV_EVENT_SCREEN_UNLOADED, ui_settingsWifi_screen_destroy);
     ui_object_set_themeable_style_property(ui_settingsWifi, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
                                            _ui_theme_color_BlueBG);
     ui_object_set_themeable_style_property(ui_settingsWifi, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
@@ -191,22 +217,30 @@ void ui_settingsWifi_screen_init(void)
     lv_obj_set_style_bg_color(ui_setting9, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_setting9, 11, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Button1 = lv_btn_create(ui_setting9);
-    lv_obj_set_height(ui_Button1, 34);
-    lv_obj_set_width(ui_Button1, lv_pct(106));
-    lv_obj_set_align(ui_Button1, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Button1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_clear_flag(ui_Button1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_Button1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_Button1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_saveSetting = lv_btn_create(ui_setting9);
+    lv_obj_set_height(ui_saveSetting, 34);
+    lv_obj_set_width(ui_saveSetting, lv_pct(106));
+    lv_obj_set_align(ui_saveSetting, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_saveSetting, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_saveSetting, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_saveSetting, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_saveSetting, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Label16 = lv_label_create(ui_Button1);
-    lv_obj_set_width(ui_Label16, lv_pct(100));
-    lv_obj_set_height(ui_Label16, LV_SIZE_CONTENT);    /// 100
-    lv_obj_set_align(ui_Label16, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label16, "Save and Connect");
-    lv_obj_set_style_text_align(ui_Label16, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_Label16, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_saveSSID = lv_label_create(ui_saveSetting);
+    lv_obj_set_width(ui_saveSSID, lv_pct(100));
+    lv_obj_set_height(ui_saveSSID, LV_SIZE_CONTENT);    /// 100
+    lv_obj_set_align(ui_saveSSID, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_saveSSID, "Save and Connect");
+    lv_obj_set_style_text_align(ui_saveSSID, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_saveSSID, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_ImgButton1 = lv_imgbtn_create(ui_settingsWifi);
+    lv_imgbtn_set_src(ui_ImgButton1, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_button_dissmiss_png, NULL);
+    lv_obj_set_height(ui_ImgButton1, 46);
+    lv_obj_set_width(ui_ImgButton1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_x(ui_ImgButton1, 0);
+    lv_obj_set_y(ui_ImgButton1, 82);
+    lv_obj_set_align(ui_ImgButton1, LV_ALIGN_CENTER);
 
     ui_Keyboardssid = lv_keyboard_create(ui_settingsWifi);
     lv_obj_set_width(ui_Keyboardssid, lv_pct(90));
@@ -216,12 +250,16 @@ void ui_settingsWifi_screen_init(void)
 
     lv_obj_add_event_cb(ui_ssid, ui_event_ssid, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_ssidPwd, ui_event_ssidPwd, LV_EVENT_ALL, NULL);
-    lv_obj_add_event_cb(ui_Button1, ui_event_Button1, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_saveSetting, ui_event_saveSetting, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_ImgButton1, ui_event_ImgButton1, LV_EVENT_ALL, NULL);
     lv_keyboard_set_textarea(ui_Keyboardssid, ui_ssid);
     lv_obj_add_event_cb(ui_Keyboardssid, ui_event_Keyboardssid, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_settingsWifi, ui_event_settingsWifi, LV_EVENT_ALL, NULL);
     uic_settingsWifi = ui_settingsWifi;
     uic_ssid = ui_ssid;
     uic_ssidPwd = ui_ssidPwd;
+    uic_saveSetting = ui_saveSetting;
+    uic_saveSSID = ui_saveSSID;
     uic_Keyboardssid = ui_Keyboardssid;
 
 }
@@ -247,8 +285,11 @@ void ui_settingsWifi_screen_destroy(void)
     ui_ssidPwd = NULL;
     ui_Container10 = NULL;
     ui_setting9 = NULL;
-    ui_Button1 = NULL;
-    ui_Label16 = NULL;
+    uic_saveSetting = NULL;
+    ui_saveSetting = NULL;
+    uic_saveSSID = NULL;
+    ui_saveSSID = NULL;
+    ui_ImgButton1 = NULL;
     uic_Keyboardssid = NULL;
     ui_Keyboardssid = NULL;
 

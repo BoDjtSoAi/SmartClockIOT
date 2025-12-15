@@ -60,6 +60,9 @@ void ui_event_alarmDismiss(lv_event_t * e)
     if(event_code == LV_EVENT_CLICKED) {
         dismissAlarmButton(e);
     }
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_mainTime, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 500, 0, &ui_mainTime_screen_init);
+    }
 }
 
 void ui_event_alarmSnooze(lv_event_t * e)
@@ -69,6 +72,9 @@ void ui_event_alarmSnooze(lv_event_t * e)
     if(event_code == LV_EVENT_CLICKED) {
         alarmSnooze(e);
     }
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_mainTime, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 500, 0, &ui_mainTime_screen_init);
+    }
 }
 
 // build funtions
@@ -77,6 +83,7 @@ void ui_alarmRang_screen_init(void)
 {
     ui_alarmRang = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_alarmRang, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_event_cb(ui_alarmRang, scr_unloaded_delete_cb, LV_EVENT_SCREEN_UNLOADED, ui_alarmRang_screen_destroy);
     lv_obj_set_style_bg_grad_color(ui_alarmRang, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_alarmRang, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 

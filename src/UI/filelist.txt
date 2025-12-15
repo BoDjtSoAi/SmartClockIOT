@@ -53,5 +53,5 @@ fonts/ui_font_InterMedium.c
 fonts/ui_font_InterSmall.c
 fonts/ui_font_interTemp.c
 fonts/ui_font_interTempHeader.c
-fonts/ui_font_weatherText.c
 fonts/ui_font_Setting.c
+fonts/ui_font_weatherText.c

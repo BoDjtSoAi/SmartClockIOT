@@ -5,20 +5,28 @@
 
 #include "ui.h"
 
-lv_obj_t * uic_confirmLocation;
-lv_obj_t * uic_confirmTime;
+lv_obj_t * uic_UpdateConfig;
+lv_obj_t * uic_confirmSetting;
+lv_obj_t * uic_reset;
+lv_obj_t * uic_defaultSetting;
+lv_obj_t * uic_timeoutRoller;
+lv_obj_t * uic_locationDrop;
+lv_obj_t * uic_timezoneDrop;
 lv_obj_t * uic_setting2;
+lv_obj_t * uic_autoBrightness;
+lv_obj_t * uic_brightness;
 lv_obj_t * uic_setting1;
 lv_obj_t * uic_cityNameSetting;
 lv_obj_t * uic_systemTime;
 lv_obj_t * uic_settingHeaderSmall2;
+lv_obj_t * uic_SystemSettingHeader;
 lv_obj_t * uic_settingHeaderSmall;
 lv_obj_t * uic_settingHeader;
 lv_obj_t * uic_settings;
 lv_obj_t * ui_settings = NULL;
 lv_obj_t * ui_settingHeader = NULL;
 lv_obj_t * ui_settingHeaderSmall = NULL;
-lv_obj_t * ui_Label1 = NULL;
+lv_obj_t * ui_SystemSettingHeader = NULL;
 lv_obj_t * ui_settingHeaderSmall2 = NULL;
 lv_obj_t * ui_Image1 = NULL;
 lv_obj_t * ui_Container9 = NULL;
@@ -27,24 +35,27 @@ lv_obj_t * ui_cityNameSetting = NULL;
 lv_obj_t * ui_Container11 = NULL;
 lv_obj_t * ui_setting1 = NULL;
 lv_obj_t * ui_Label5 = NULL;
-lv_obj_t * ui_Slider1 = NULL;
-lv_obj_t * ui_Checkbox1 = NULL;
+lv_obj_t * ui_brightness = NULL;
+lv_obj_t * ui_autoBrightness = NULL;
 lv_obj_t * ui_setting2 = NULL;
 lv_obj_t * ui_Label2 = NULL;
-lv_obj_t * ui_Roller1 = NULL;
+lv_obj_t * ui_timezoneDrop = NULL;
 lv_obj_t * ui_setting3 = NULL;
 lv_obj_t * ui_Label6 = NULL;
-lv_obj_t * ui_Dropdown1 = NULL;
+lv_obj_t * ui_locationDrop = NULL;
+lv_obj_t * ui_Container7 = NULL;
 lv_obj_t * ui_setting4 = NULL;
 lv_obj_t * ui_Button2 = NULL;
 lv_obj_t * ui_Label7 = NULL;
+lv_obj_t * ui_setting6 = NULL;
+lv_obj_t * ui_Label13 = NULL;
+lv_obj_t * ui_timeoutRoller = NULL;
 lv_obj_t * ui_setting5 = NULL;
 lv_obj_t * ui_Label8 = NULL;
-lv_obj_t * ui_confirmTime = NULL;
-lv_obj_t * ui_Label9 = NULL;
-lv_obj_t * ui_Label11 = NULL;
-lv_obj_t * ui_confirmLocation = NULL;
-lv_obj_t * ui_Label10 = NULL;
+lv_obj_t * ui_defaultSetting = NULL;
+lv_obj_t * ui_reset = NULL;
+lv_obj_t * ui_confirmSetting = NULL;
+lv_obj_t * ui_UpdateConfig = NULL;
 // event funtions
 void ui_event_settings(lv_event_t * e)
 {
@@ -52,7 +63,10 @@ void ui_event_settings(lv_event_t * e)
 
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_mainTime, LV_SCR_LOAD_ANIM_OUT_TOP, 400, 0, &ui_mainTime_screen_init);
+        _ui_screen_change(&ui_mainTime, LV_SCR_LOAD_ANIM_FADE_OUT, 400, 0, &ui_mainTime_screen_init);
+    }
+    if(event_code == LV_EVENT_SCREEN_LOADED) {
+        _ui_label_set_property(ui_SystemSettingHeader, _UI_LABEL_PROPERTY_TEXT, "System Settings");
     }
 }
 
@@ -62,6 +76,20 @@ void ui_event_Button2(lv_event_t * e)
 
     if(event_code == LV_EVENT_CLICKED) {
         _ui_screen_change(&ui_settingsWifi, LV_SCR_LOAD_ANIM_FADE_ON, 400, 5, &ui_settingsWifi_screen_init);
+    }
+}
+
+void ui_event_defaultSetting(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        _ui_label_set_property(ui_SystemSettingHeader, _UI_LABEL_PROPERTY_TEXT, "Default Loaded!");
+        _ui_slider_set_property(ui_brightness, _UI_SLIDER_PROPERTY_VALUE, 100);
+        _ui_dropdown_set_property(ui_timezoneDrop, _UI_DROPDOWN_PROPERTY_SELECTED, 19);
+        _ui_dropdown_set_property(ui_locationDrop, _UI_DROPDOWN_PROPERTY_SELECTED, 1);
+        _ui_roller_set_property(ui_timeoutRoller, _UI_ROLLER_PROPERTY_SELECTED_WITH_ANIM, 2);
+        _ui_state_modify(ui_autoBrightness, LV_STATE_CHECKED, _UI_MODIFY_STATE_REMOVE);
     }
 }
 
@@ -79,28 +107,26 @@ void ui_settings_screen_init(void)
 
     ui_settingHeader = lv_obj_create(ui_settings);
     lv_obj_remove_style_all(ui_settingHeader);
-    lv_obj_set_width(ui_settingHeader, lv_pct(100));
+    lv_obj_set_width(ui_settingHeader, lv_pct(95));
     lv_obj_set_height(ui_settingHeader, lv_pct(20));
     lv_obj_set_align(ui_settingHeader, LV_ALIGN_TOP_MID);
     lv_obj_clear_flag(ui_settingHeader, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_radius(ui_settingHeader, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_settingHeader, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_settingHeader, 11, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_settingHeaderSmall = lv_obj_create(ui_settingHeader);
     lv_obj_remove_style_all(ui_settingHeaderSmall);
     lv_obj_set_width(ui_settingHeaderSmall, lv_pct(60));
     lv_obj_set_height(ui_settingHeaderSmall, lv_pct(100));
-    lv_obj_set_flex_flow(ui_settingHeaderSmall, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(ui_settingHeaderSmall, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_settingHeaderSmall, LV_FLEX_FLOW_ROW_WRAP);
+    lv_obj_set_flex_align(ui_settingHeaderSmall, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
     lv_obj_clear_flag(ui_settingHeaderSmall, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    ui_Label1 = lv_label_create(ui_settingHeaderSmall);
-    lv_obj_set_width(ui_Label1, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label1, "System Settings");
-    lv_obj_set_style_text_font(ui_Label1, &ui_font_Heading_1, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_SystemSettingHeader = lv_label_create(ui_settingHeaderSmall);
+    lv_obj_set_width(ui_SystemSettingHeader, lv_pct(100));
+    lv_obj_set_height(ui_SystemSettingHeader, lv_pct(60));
+    lv_obj_set_align(ui_SystemSettingHeader, LV_ALIGN_CENTER);
+    lv_label_set_long_mode(ui_SystemSettingHeader, LV_LABEL_LONG_DOT);
+    lv_label_set_text(ui_SystemSettingHeader, "LMAO");
+    lv_obj_set_style_text_font(ui_SystemSettingHeader, &ui_font_Heading_1, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_settingHeaderSmall2 = lv_obj_create(ui_settingHeader);
     lv_obj_remove_style_all(ui_settingHeaderSmall2);
@@ -172,21 +198,21 @@ void ui_settings_screen_init(void)
     lv_label_set_text(ui_Label5, "Brightness");
     lv_obj_set_style_text_font(ui_Label5, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Slider1 = lv_slider_create(ui_setting1);
-    lv_slider_set_value(ui_Slider1, 0, LV_ANIM_OFF);
-    if(lv_slider_get_mode(ui_Slider1) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_Slider1, 0, LV_ANIM_OFF);
-    lv_obj_set_width(ui_Slider1, lv_pct(38));
-    lv_obj_set_height(ui_Slider1, lv_pct(70));
-    lv_obj_set_x(ui_Slider1, 31);
-    lv_obj_set_y(ui_Slider1, 23);
-    lv_obj_set_align(ui_Slider1, LV_ALIGN_CENTER);
+    ui_brightness = lv_slider_create(ui_setting1);
+    lv_slider_set_value(ui_brightness, 0, LV_ANIM_OFF);
+    if(lv_slider_get_mode(ui_brightness) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_brightness, 0, LV_ANIM_OFF);
+    lv_obj_set_width(ui_brightness, lv_pct(38));
+    lv_obj_set_height(ui_brightness, lv_pct(70));
+    lv_obj_set_x(ui_brightness, 31);
+    lv_obj_set_y(ui_brightness, 23);
+    lv_obj_set_align(ui_brightness, LV_ALIGN_CENTER);
 
-    ui_Checkbox1 = lv_checkbox_create(ui_setting1);
-    lv_checkbox_set_text(ui_Checkbox1, "Auto");
-    lv_obj_set_width(ui_Checkbox1, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Checkbox1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_Checkbox1, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Checkbox1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    ui_autoBrightness = lv_checkbox_create(ui_setting1);
+    lv_checkbox_set_text(ui_autoBrightness, "Auto");
+    lv_obj_set_width(ui_autoBrightness, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_autoBrightness, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_autoBrightness, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_autoBrightness, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
 
     ui_setting2 = lv_obj_create(ui_Container11);
     lv_obj_set_width(ui_setting2, lv_pct(90));
@@ -207,16 +233,16 @@ void ui_settings_screen_init(void)
     lv_label_set_text(ui_Label2, "Timezone");
     lv_obj_set_style_text_font(ui_Label2, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Roller1 = lv_roller_create(ui_setting2);
-    lv_roller_set_options(ui_Roller1, "UTC +5\nUTC +6\nUTC +7 Vietnam", LV_ROLLER_MODE_NORMAL);
-    lv_obj_set_height(ui_Roller1, 30);
-    lv_obj_set_width(ui_Roller1, lv_pct(45));
-    lv_obj_set_align(ui_Roller1, LV_ALIGN_CENTER);
-
-    lv_obj_set_style_radius(ui_Roller1, 20, LV_PART_SELECTED | LV_STATE_DEFAULT);
-    ui_object_set_themeable_style_property(ui_Roller1, LV_PART_SELECTED | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
+    ui_timezoneDrop = lv_dropdown_create(ui_setting2);
+    lv_dropdown_set_options(ui_timezoneDrop,
+                            "UTC-12\nUTC-11 Samoa\nUTC-10 Hawaii\nUTC-09 Alaska\nUTC-08 Pacific\nUTC-07 Mountain\nUTC-06 Central\nUTC-05 Eastern\nUTC-04 Atlantic\nUTC-03 Brazil\nUTC-02 Noronha\nUTC-01 Azores\nUTC+00 London\nUTC+01 Paris\nUTC+02 Cairo\nUTC+03 Moscow\nUTC+04 Dubai\nUTC+05 Pakistan\nUTC+06 Bangladesh\nUTC+07 Vietnam\nUTC+08 Singapore\nUTC+09 Japan\nUTC+10 Sydney\nUTC+11 Solomon\nUTC+12 New Zealand");
+    lv_obj_set_width(ui_timezoneDrop, lv_pct(55));
+    lv_obj_set_height(ui_timezoneDrop, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_timezoneDrop, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_timezoneDrop, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    ui_object_set_themeable_style_property(ui_timezoneDrop, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
                                            _ui_theme_color_BlueBG);
-    ui_object_set_themeable_style_property(ui_Roller1, LV_PART_SELECTED | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
+    ui_object_set_themeable_style_property(ui_timezoneDrop, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
                                            _ui_theme_alpha_BlueBG);
 
     ui_setting3 = lv_obj_create(ui_Container11);
@@ -238,22 +264,31 @@ void ui_settings_screen_init(void)
     lv_label_set_text(ui_Label6, "Location");
     lv_obj_set_style_text_font(ui_Label6, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Dropdown1 = lv_dropdown_create(ui_setting3);
-    lv_dropdown_set_options(ui_Dropdown1, "Da Lat\nHa Noi\nHo Chi Minh");
-    lv_obj_set_width(ui_Dropdown1, 150);
-    lv_obj_set_height(ui_Dropdown1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_Dropdown1, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Dropdown1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    ui_object_set_themeable_style_property(ui_Dropdown1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
+    ui_locationDrop = lv_dropdown_create(ui_setting3);
+    lv_dropdown_set_dir(ui_locationDrop, LV_DIR_TOP);
+    lv_dropdown_set_options(ui_locationDrop,
+                            "Ha Noi\nHo Chi Minh\nThu Duc\nDa Nang\nCan Tho\nBien Hoa\nVung Tau\nQuy Nhon\nNha Trang\nHue\nDa Lat\nBuon Ma Thuot\nCam Ranh\nCa Mau\nVinh\nLong Xuyen\nRach Gia\nSoc Trang\nTra Vinh\nBen Tre\nVinh Long\nPhan Thiet\nPhan Rang-Thap Cham\nQuang Ngai\nTuy Hoa\nHa Tinh\nThanh Hoa\nNam Dinh\nThai Nguyen\nThai Binh\nBac Ninh\nBac Giang\nHa Nam\nHa Giang\nHa Long\nPhu Quoc\nPhu Tho\nTay Ninh");
+    lv_obj_set_width(ui_locationDrop, lv_pct(55));
+    lv_obj_set_height(ui_locationDrop, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_locationDrop, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_locationDrop, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    ui_object_set_themeable_style_property(ui_locationDrop, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
                                            _ui_theme_color_BlueBG);
-    ui_object_set_themeable_style_property(ui_Dropdown1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
+    ui_object_set_themeable_style_property(ui_locationDrop, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
                                            _ui_theme_alpha_BlueBG);
 
-    ui_setting4 = lv_obj_create(ui_Container11);
-    lv_obj_set_width(ui_setting4, lv_pct(90));
-    lv_obj_set_height(ui_setting4, lv_pct(18));
-    lv_obj_set_x(ui_setting4, 54);
-    lv_obj_set_y(ui_setting4, 1);
+    ui_Container7 = lv_obj_create(ui_Container11);
+    lv_obj_remove_style_all(ui_Container7);
+    lv_obj_set_width(ui_Container7, lv_pct(90));
+    lv_obj_set_height(ui_Container7, lv_pct(18));
+    lv_obj_set_align(ui_Container7, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_Container7, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(ui_Container7, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+    lv_obj_clear_flag(ui_Container7, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_setting4 = lv_obj_create(ui_Container7);
+    lv_obj_set_width(ui_setting4, lv_pct(48));
+    lv_obj_set_height(ui_setting4, lv_pct(100));
     lv_obj_set_align(ui_setting4, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_setting4, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(ui_setting4, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
@@ -263,7 +298,7 @@ void ui_settings_screen_init(void)
 
     ui_Button2 = lv_btn_create(ui_setting4);
     lv_obj_set_height(ui_Button2, 34);
-    lv_obj_set_width(ui_Button2, lv_pct(106));
+    lv_obj_set_width(ui_Button2, lv_pct(115));
     lv_obj_set_align(ui_Button2, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_Button2, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_Button2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -271,12 +306,41 @@ void ui_settings_screen_init(void)
     lv_obj_set_style_bg_opa(ui_Button2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label7 = lv_label_create(ui_Button2);
-    lv_obj_set_width(ui_Label7, lv_pct(100));
+    lv_obj_set_width(ui_Label7, lv_pct(101));
     lv_obj_set_height(ui_Label7, LV_SIZE_CONTENT);    /// 100
     lv_obj_set_align(ui_Label7, LV_ALIGN_CENTER);
+    lv_label_set_long_mode(ui_Label7, LV_LABEL_LONG_SCROLL);
     lv_label_set_text(ui_Label7, "Wifi Settings");
     lv_obj_set_style_text_align(ui_Label7, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label7, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_setting6 = lv_obj_create(ui_Container7);
+    lv_obj_set_width(ui_setting6, lv_pct(48));
+    lv_obj_set_height(ui_setting6, lv_pct(100));
+    lv_obj_set_align(ui_setting6, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_setting6, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(ui_setting6, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_setting6, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_setting6, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_setting6, 11, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_Label13 = lv_label_create(ui_setting6);
+    lv_obj_set_width(ui_Label13, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label13, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_Label13, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label13, "Timeout");
+
+    ui_timeoutRoller = lv_roller_create(ui_setting6);
+    lv_roller_set_options(ui_timeoutRoller, "10s\n30s\n1m\n2m\n5m\n10m\nAlways On", LV_ROLLER_MODE_NORMAL);
+    lv_obj_set_width(ui_timeoutRoller, 113);
+    lv_obj_set_height(ui_timeoutRoller, lv_pct(343));
+    lv_obj_set_align(ui_timeoutRoller, LV_ALIGN_CENTER);
+
+    lv_obj_set_style_radius(ui_timeoutRoller, 20, LV_PART_SELECTED | LV_STATE_DEFAULT);
+    ui_object_set_themeable_style_property(ui_timeoutRoller, LV_PART_SELECTED | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
+                                           _ui_theme_color_BlueBG);
+    ui_object_set_themeable_style_property(ui_timeoutRoller, LV_PART_SELECTED | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
+                                           _ui_theme_alpha_BlueBG);
 
     ui_setting5 = lv_obj_create(ui_Container11);
     lv_obj_set_width(ui_setting5, lv_pct(90));
@@ -297,56 +361,59 @@ void ui_settings_screen_init(void)
     lv_label_set_text(ui_Label8, "Confirm");
     lv_obj_set_style_text_font(ui_Label8, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_confirmTime = lv_btn_create(ui_setting5);
-    lv_obj_set_width(ui_confirmTime, 130);
-    lv_obj_set_height(ui_confirmTime, 30);
-    lv_obj_set_align(ui_confirmTime, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_confirmTime, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_clear_flag(ui_confirmTime, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    ui_object_set_themeable_style_property(ui_confirmTime, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_GRAD_COLOR,
+    ui_defaultSetting = lv_btn_create(ui_setting5);
+    lv_obj_set_width(ui_defaultSetting, 130);
+    lv_obj_set_height(ui_defaultSetting, 30);
+    lv_obj_set_align(ui_defaultSetting, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_defaultSetting, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_defaultSetting, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_defaultSetting, lv_color_hex(0xEC2525), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_defaultSetting, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_dir(ui_defaultSetting, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_reset = lv_label_create(ui_defaultSetting);
+    lv_obj_set_width(ui_reset, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_reset, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_reset, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_reset, "Reset");
+
+    ui_confirmSetting = lv_btn_create(ui_setting5);
+    lv_obj_set_width(ui_confirmSetting, 130);
+    lv_obj_set_height(ui_confirmSetting, 30);
+    lv_obj_set_align(ui_confirmSetting, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_confirmSetting, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_confirmSetting, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    ui_object_set_themeable_style_property(ui_confirmSetting, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_GRAD_COLOR,
                                            _ui_theme_color_BlueBG);
-    lv_obj_set_style_bg_grad_dir(ui_confirmTime, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_dir(ui_confirmSetting, LV_GRAD_DIR_HOR, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Label9 = lv_label_create(ui_confirmTime);
-    lv_obj_set_width(ui_Label9, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label9, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_Label9, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label9, "Update Time");
-
-    ui_Label11 = lv_label_create(ui_confirmTime);
-    lv_obj_set_width(ui_Label11, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label11, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_Label11, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label11, "Update Time");
-
-    ui_confirmLocation = lv_btn_create(ui_setting5);
-    lv_obj_set_width(ui_confirmLocation, 130);
-    lv_obj_set_height(ui_confirmLocation, 30);
-    lv_obj_set_align(ui_confirmLocation, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_confirmLocation, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_clear_flag(ui_confirmLocation, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    ui_object_set_themeable_style_property(ui_confirmLocation, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_GRAD_COLOR,
-                                           _ui_theme_color_BlueBG);
-    lv_obj_set_style_bg_grad_dir(ui_confirmLocation, LV_GRAD_DIR_HOR, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Label10 = lv_label_create(ui_confirmLocation);
-    lv_obj_set_width(ui_Label10, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label10, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_Label10, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label10, "Update Location");
+    ui_UpdateConfig = lv_label_create(ui_confirmSetting);
+    lv_obj_set_width(ui_UpdateConfig, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_UpdateConfig, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_UpdateConfig, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_UpdateConfig, "Update Config");
 
     lv_obj_add_event_cb(ui_Button2, ui_event_Button2, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_defaultSetting, ui_event_defaultSetting, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_settings, ui_event_settings, LV_EVENT_ALL, NULL);
     uic_settings = ui_settings;
     uic_settingHeader = ui_settingHeader;
     uic_settingHeaderSmall = ui_settingHeaderSmall;
+    uic_SystemSettingHeader = ui_SystemSettingHeader;
     uic_settingHeaderSmall2 = ui_settingHeaderSmall2;
     uic_systemTime = ui_systemTime;
     uic_cityNameSetting = ui_cityNameSetting;
     uic_setting1 = ui_setting1;
+    uic_brightness = ui_brightness;
+    uic_autoBrightness = ui_autoBrightness;
     uic_setting2 = ui_setting2;
-    uic_confirmTime = ui_confirmTime;
-    uic_confirmLocation = ui_confirmLocation;
+    uic_timezoneDrop = ui_timezoneDrop;
+    uic_locationDrop = ui_locationDrop;
+    uic_timeoutRoller = ui_timeoutRoller;
+    uic_defaultSetting = ui_defaultSetting;
+    uic_reset = ui_reset;
+    uic_confirmSetting = ui_confirmSetting;
+    uic_UpdateConfig = ui_UpdateConfig;
 
 }
 
@@ -361,7 +428,8 @@ void ui_settings_screen_destroy(void)
     ui_settingHeader = NULL;
     uic_settingHeaderSmall = NULL;
     ui_settingHeaderSmall = NULL;
-    ui_Label1 = NULL;
+    uic_SystemSettingHeader = NULL;
+    ui_SystemSettingHeader = NULL;
     uic_settingHeaderSmall2 = NULL;
     ui_settingHeaderSmall2 = NULL;
     ui_Image1 = NULL;
@@ -374,26 +442,36 @@ void ui_settings_screen_destroy(void)
     uic_setting1 = NULL;
     ui_setting1 = NULL;
     ui_Label5 = NULL;
-    ui_Slider1 = NULL;
-    ui_Checkbox1 = NULL;
+    uic_brightness = NULL;
+    ui_brightness = NULL;
+    uic_autoBrightness = NULL;
+    ui_autoBrightness = NULL;
     uic_setting2 = NULL;
     ui_setting2 = NULL;
     ui_Label2 = NULL;
-    ui_Roller1 = NULL;
+    uic_timezoneDrop = NULL;
+    ui_timezoneDrop = NULL;
     ui_setting3 = NULL;
     ui_Label6 = NULL;
-    ui_Dropdown1 = NULL;
+    uic_locationDrop = NULL;
+    ui_locationDrop = NULL;
+    ui_Container7 = NULL;
     ui_setting4 = NULL;
     ui_Button2 = NULL;
     ui_Label7 = NULL;
+    ui_setting6 = NULL;
+    ui_Label13 = NULL;
+    uic_timeoutRoller = NULL;
+    ui_timeoutRoller = NULL;
     ui_setting5 = NULL;
     ui_Label8 = NULL;
-    uic_confirmTime = NULL;
-    ui_confirmTime = NULL;
-    ui_Label9 = NULL;
-    ui_Label11 = NULL;
-    uic_confirmLocation = NULL;
-    ui_confirmLocation = NULL;
-    ui_Label10 = NULL;
+    uic_defaultSetting = NULL;
+    ui_defaultSetting = NULL;
+    uic_reset = NULL;
+    ui_reset = NULL;
+    uic_confirmSetting = NULL;
+    ui_confirmSetting = NULL;
+    uic_UpdateConfig = NULL;
+    ui_UpdateConfig = NULL;
 
 }

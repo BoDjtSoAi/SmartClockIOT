@@ -8,8 +8,8 @@
 #include "UI/ui.h"
 
 // WiFi credentials
-static const char* WIFI_SSID = "Long";
-static const char* WIFI_PASS = "09092004";
+String global_ssid = "";
+String global_password = "";
 
 #define BUZZER_PIN 4
 #define SQW_PIN 5
@@ -91,6 +91,66 @@ PubSubClient client(espClient);
 // rtc is define in main.cpp --> use extern
 extern RTC_DS3231 rtc;
 Preferences preferences;
+Preferences wifiPreferences;
+
+void saveWifiConfig(const char* ssid, const char* pwd) {
+    wifiPreferences.begin("wifi", false);
+    wifiPreferences.putString("ssid", ssid);
+    wifiPreferences.putString("password", pwd);
+    wifiPreferences.end();
+    
+    global_ssid = String(ssid);
+    global_password = String(pwd);
+    Serial.println("[WiFi] Config saved");
+}
+
+void loadWifiConfig() {
+    wifiPreferences.begin("wifi", true);
+    global_ssid = wifiPreferences.getString("ssid", "");
+    global_password = wifiPreferences.getString("password", "");
+    wifiPreferences.end();
+    
+    if (global_ssid == "") {
+        Serial.println("[WiFi] No saved config, using defaults");
+        // Optional: Set default fallback if needed
+    } else {
+        Serial.println("[WiFi] Config loaded: " + global_ssid);
+    }
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void loadWifiSettingsUI() {
+    // Ensure we have the latest config
+    if (global_ssid == "") {
+        loadWifiConfig();
+    }
+    
+    if (ui_ssid) {
+        lv_textarea_set_text(ui_ssid, global_ssid.c_str());
+    }
+    if (ui_ssidPwd) {
+        lv_textarea_set_text(ui_ssidPwd, global_password.c_str());
+    }
+}
+
+void saveWifiSettingsC() {
+    if (ui_ssid && ui_ssidPwd) {
+        const char* ssid = lv_textarea_get_text(ui_ssid);
+        const char* pwd = lv_textarea_get_text(ui_ssidPwd);
+        saveWifiConfig(ssid, pwd);
+        
+        // Optional: Trigger reconnect
+        WiFi.disconnect();
+        WiFi.begin(global_ssid.c_str(), global_password.c_str());
+    }
+}
+
+#ifdef __cplusplus
+}
+#endif
 
 void saveAlarmConfig() {
   // Use a small delay to ensure stability before flash operations
@@ -213,7 +273,9 @@ void mqttTask(void *parameter)
         lastWiFiAttempt = now;
         Serial.println("[WIFI] Not connected, attempting WiFi.begin()...");
         WiFi.disconnect();
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+        if (global_ssid != "") {
+            WiFi.begin(global_ssid.c_str(), global_password.c_str());
+        }
       }
       // Wait a bit and continue; MQTT cannot connect without WiFi.
       vTaskDelay(pdMS_TO_TICKS(200));
@@ -285,6 +347,11 @@ void processWeatherInformation(const String &message)
   if (uic_cityName)
   {
     lv_label_set_text(uic_cityName, city);
+  }
+
+  if (uic_cityNameSetting)
+  {
+    lv_label_set_text(uic_cityNameSetting, city);
   }
 
 if (uic_cityNameTemp)
@@ -401,10 +468,12 @@ void dismissAlarm()
   rtc.clearAlarm(1);
   
   // Switch back to main screen
-  if (!ui_mainTime) {
+  /*if (!ui_mainTime) {
       ui_mainTime_screen_init();
   }
   lv_disp_load_scr(ui_mainTime);
+  */
+  
   if (uic_CalendarMain)
   updateCalendarHighlights();
 }
@@ -497,6 +566,7 @@ void System_Init()
   attachInterrupt(digitalPinToInterrupt(SQW_PIN), onAlarmISR, FALLING);
   
   loadAlarmConfig(); // Load alarm from flash
+  loadWifiConfig();  // Load WiFi config from flash
 
   // Reserve heap to avoid fragmentation
   weatherMessage.reserve(512);
@@ -508,7 +578,10 @@ void System_Init()
 
   // WiFi
   WiFi.setSleep(false);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  loadWifiConfig(); // Load WiFi credentials
+  if (global_ssid != "") {
+      WiFi.begin(global_ssid.c_str(), global_password.c_str());
+  }
   // Start WiFi connection in non-blocking mode and continue boot.
   // The mqttTask() will handle reconnects and final subscription when WiFi is available.
   Serial.println("[System] WiFi begin (non-blocking)");
@@ -723,7 +796,9 @@ void System_Handle_Loop()
       {
         lastTimeConnectWifi = currentMillis;
         WiFi.disconnect();
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+        if (global_ssid != "") {
+            WiFi.begin(global_ssid.c_str(), global_password.c_str());
+        }
       }
     }
   }
@@ -757,10 +832,12 @@ void snoozeAlarm()
   rtc.setAlarm1(snoozeTime, DS3231_A1_Date); // Match Date, Hours, Minutes
 
   // 4. Switch back to main screen
-  if (!ui_mainTime) {
+  /*if (!ui_mainTime) {
       ui_mainTime_screen_init();
   }
   lv_disp_load_scr(ui_mainTime);
+  */
+  
   updateAlarmUI();
   updateCalendarHighlights();
 }

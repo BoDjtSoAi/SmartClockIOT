@@ -98,8 +98,8 @@ LV_FONT_DECLARE(ui_font_InterMedium);
 LV_FONT_DECLARE(ui_font_InterSmall);
 LV_FONT_DECLARE(ui_font_interTemp);
 LV_FONT_DECLARE(ui_font_interTempHeader);
-LV_FONT_DECLARE(ui_font_weatherText);
 LV_FONT_DECLARE(ui_font_Setting);
+LV_FONT_DECLARE(ui_font_weatherText);
 
 // UI INIT
 void ui_init(void);

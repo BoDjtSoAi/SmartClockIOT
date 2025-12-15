@@ -11,6 +11,8 @@ extern "C" {
 #endif
 void dismissAlarm();
 void snoozeAlarm();
+void saveWifiSettingsC();
+void loadWifiSettingsUI();
 #ifdef __cplusplus
 }
 #endif
@@ -24,22 +26,32 @@ void dismissAlarmButton(lv_event_t * e)
 
 void stop_main_animations(lv_event_t * e)
 {
-    lv_anim_del(ui_Container2, NULL);
-    lv_anim_del(ui_Container1, NULL);
+    if (ui_Container2) lv_anim_del(ui_Container2, NULL);
+    if (ui_Container1) lv_anim_del(ui_Container1, NULL);
 }
 
 void stop_alarm_animations(lv_event_t * e)
 {
-    lv_anim_del(ui_Container6, NULL);
-    lv_anim_del(ui_headerRight, NULL);
-    lv_anim_del(ui_Image7, NULL);
-    lv_anim_del(ui_headerLeft, NULL);
-    lv_anim_del(ui_Image8, NULL);
-    lv_anim_del(ui_Label4, NULL);
+    if (ui_Container6) lv_anim_del(ui_Container6, NULL);
+    if (ui_headerRight) lv_anim_del(ui_headerRight, NULL);
+    if (ui_Image7) lv_anim_del(ui_Image7, NULL);
+    if (ui_headerLeft) lv_anim_del(ui_headerLeft, NULL);
+    if (ui_Image8) lv_anim_del(ui_Image8, NULL);
+    if (ui_Label4) lv_anim_del(ui_Label4, NULL);
 }
 
 
 void alarmSnooze(lv_event_t * e)
 {
 	snoozeAlarm();
+}
+
+void saveWifiSettings(lv_event_t * e)
+{
+	saveWifiSettingsC();
+}
+
+void loadWifiSettings(lv_event_t * e)
+{
+    loadWifiSettingsUI();
 }

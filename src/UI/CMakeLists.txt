@@ -53,7 +53,7 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     fonts/ui_font_InterSmall.c
     fonts/ui_font_interTemp.c
     fonts/ui_font_interTempHeader.c
-    fonts/ui_font_weatherText.c
-    fonts/ui_font_Setting.c)
+    fonts/ui_font_Setting.c
+    fonts/ui_font_weatherText.c)
 
 add_library(ui ${SOURCES})
