@@ -8,8 +8,8 @@
 #include "UI/ui.h"
 
 // WiFi credentials
-static const char* WIFI_SSID = "Bluevolt_2.4";
-static const char* WIFI_PASS = "0877884747";
+static const char* WIFI_SSID = "Long";
+static const char* WIFI_PASS = "09092004";
 
 #define BUZZER_PIN 4
 #define SQW_PIN 5
@@ -78,14 +78,22 @@ extern RTC_DS3231 rtc;
 Preferences preferences;
 
 void saveAlarmConfig() {
-  preferences.begin("alarm", false);
+  // Use a small delay to ensure stability before flash operations
+  delay(10);
+  if (!preferences.begin("alarm", false)) {
+      Serial.println("[System] Failed to open preferences for saving");
+      return;
+  }
   preferences.putInt("year", alarm1.year);
   preferences.putInt("month", alarm1.month);
   preferences.putInt("day", alarm1.day);
   preferences.putInt("hour", alarm1.hour);
   preferences.putInt("minute", alarm1.minute);
-  preferences.putBool("enabled", alarm1.enabled);
+  // Use putInt instead of putBool for better compatibility
+  preferences.putInt("enabled", alarm1.enabled ? 1 : 0);
   preferences.end();
+  delay(10); // Allow flash write to settle
+  Serial.println("[System] Alarm config saved");
 }
 
 void loadAlarmConfig() {
@@ -95,11 +103,27 @@ void loadAlarmConfig() {
   alarm1.day = preferences.getInt("day", 0);
   alarm1.hour = preferences.getInt("hour", 0);
   alarm1.minute = preferences.getInt("minute", 0);
-  alarm1.enabled = preferences.getBool("enabled", false);
+  // Read as int
+  alarm1.enabled = (preferences.getInt("enabled", 0) == 1);
   preferences.end();
 
   // Restore RTC alarm if enabled
   if (alarm1.enabled) {
+      DateTime now = rtc.now();
+      // Basic validation
+      if (alarm1.year < 2000 || alarm1.month < 1 || alarm1.month > 12 || alarm1.day < 1 || alarm1.day > 31) {
+          alarm1.enabled = false;
+      } else {
+          DateTime dtAlarm(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0);
+          if (dtAlarm.unixtime() <= now.unixtime()) {
+              Serial.println("[System] Loaded alarm is in the past. Disabling.");
+              alarm1.enabled = false;
+          }
+      }
+  }
+
+  if (alarm1.enabled) {
+      rtc.disableAlarm(1);
       rtc.clearAlarm(1);
       // Set hardware alarm for Day, Hour, Minute
       rtc.setAlarm1(DateTime(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0), DS3231_A1_Date);
@@ -256,7 +280,7 @@ if (uic_cityNameTemp)
   
   if (uic_weatherTemp)
   {
-    String tempStr = String(temp, 1) + "'C";
+    String tempStr = String(temp, 0) + "'C";
     lv_label_set_text(uic_weatherTemp, tempStr.c_str());
   }
 
@@ -303,26 +327,26 @@ void processAirQualityInformation(const String &message)
 
   if (uic_pm25Number1)
   {
-    String pm25Str = String(pm2_5, 1);
+    String pm25Str = String(pm2_5, 1) + " ug/m3";
     lv_label_set_text(uic_pm25Number1, pm25Str.c_str());
   }
 
 
   if (uic_pm10Number1)
   {
-    String pm10Str = String(pm10, 1);
+    String pm10Str = String(pm10, 1) + " ug/m3";
     lv_label_set_text(uic_pm10Number1, pm10Str.c_str());
   }
 
   if (uic_NONumber1)
   {
-    String noStr = String(no, 1);
+    String noStr = String(no, 1) + " ug/m3";
     lv_label_set_text(uic_NONumber1, noStr.c_str());
   }
 
   if (uic_CONumber1)
   {
-    String coStr = String(co, 1);
+    String coStr = String(co, 1) + " ug/m3";
     lv_label_set_text(uic_CONumber1, coStr.c_str());
   }
 }
@@ -355,6 +379,7 @@ void dismissAlarm()
 {
   // Turn off alarm logic
   alarm1.enabled = false; 
+  saveAlarmConfig();
   buzzerBeepCount = 0;
   digitalWrite(BUZZER_PIN, LOW);
   rtc.clearAlarm(1);
@@ -394,6 +419,7 @@ void checkAlarmTrigger()
           ui_alarmRang_screen_init();
       }
       lv_disp_load_scr(ui_alarmRang);
+      buzzerBeepCount = 50; // Beep for 5 seconds
 
       // Feed data to the screen
       // Format date: "Monday, January 15"
@@ -492,6 +518,8 @@ void updateAlarmUI() {
     if (!alarm1.enabled) {
         lv_label_set_text(uic_alarmTime, "--:--");
         lv_label_set_text(uic_alarmStatus, "OFF");
+        rtc.clearAlarm(1);
+        rtc.disableAlarm(1);
         return;
     }
 
@@ -516,24 +544,51 @@ void updateAlarmUI() {
 
 void setAlarmFromMQTT(const String &message)
 {
+  Serial.println("[MQTT] Received set alarm request");
   StaticJsonDocument<256> doc;
   if (deserializeJson(doc, message))
   {
+    Serial.println("[MQTT] JSON deserialize failed");
     return;
   }
 
-  alarm1.year = doc["year"];
-  alarm1.month = doc["month"];
-  alarm1.day = doc["day"];
-  alarm1.hour = doc["hour"];
-  alarm1.minute = doc["minute"];
+  int year = doc["year"];
+  int month = doc["month"];
+  int day = doc["day"];
+  int hour = doc["hour"];
+  int minute = doc["minute"];
+
+  // Check if alarm is in the past (e.g. retained message)
+  DateTime now = rtc.now();
+  // Basic validation
+  if (year < 2000 || month < 1 || month > 12 || day < 1 || day > 31) {
+      Serial.println("[MQTT] Invalid alarm date received");
+      return;
+  }
+  
+  DateTime dtAlarm(year, month, day, hour, minute, 0);
+
+  if (dtAlarm.unixtime() <= now.unixtime()) {
+      Serial.println("[MQTT] Ignored old alarm message");
+      return;
+  }
+
+  alarm1.year = year;
+  alarm1.month = month;
+  alarm1.day = day;
+  alarm1.hour = hour;
+  alarm1.minute = minute;
   alarm1.enabled = true;
 
+  Serial.println("[MQTT] Saving to flash...");
   saveAlarmConfig(); // Save to flash
+  Serial.println("[MQTT] Saved. Setting RTC...");
+  delay(10);
 
   rtc.clearAlarm(1);
   // Set hardware alarm for Day, Hour, Minute
-  rtc.setAlarm1(DateTime(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0), DS3231_A1_Date);
+  rtc.setAlarm1(dtAlarm, DS3231_A1_Date);
+  Serial.println("[MQTT] Alarm set successfully");
 }
 
 void System_Handle_Loop()
@@ -624,6 +679,7 @@ void System_Handle_Loop()
   if (delAlarmFlag) {
     // Dismiss alarm
     alarm1.enabled = false;
+    saveAlarmConfig();
     rtc.clearAlarm(1);
     updateAlarmUI();
   }
@@ -674,6 +730,8 @@ void snoozeAlarm()
   alarm1.minute = snoozeTime.minute();
   alarm1.enabled = true;
 
+  saveAlarmConfig();
+
   // 3. Set RTC Alarm 1 to snooze time
   rtc.clearAlarm(1);
   rtc.setAlarm1(snoozeTime, DS3231_A1_Date); // Match Date, Hours, Minutes
@@ -683,6 +741,7 @@ void snoozeAlarm()
       ui_mainTime_screen_init();
   }
   lv_disp_load_scr(ui_mainTime);
+  updateAlarmUI();
 }
 #ifdef __cplusplus
 }

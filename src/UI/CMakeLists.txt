@@ -11,6 +11,7 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     ui_helpers.c
     ui_events.c
     ui_img_1728762676.c
+    ui_img_920910679.c
     ui_img_weather_icon_png.c
     ui_img_roomtemp_png.c
     ui_img_alarm_png.c
@@ -21,7 +22,6 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     ui_img_alarmicon_png.c
     ui_img_button_dissmiss_png.c
     ui_img_buttonsnooze_png.c
-    ui_img_1548409061.c
     ui_img_home_png.c
     ui_img_cloudy_png.c
     ui_img_humidity_png.c
@@ -42,6 +42,7 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     ui_img_920896594.c
     ui_img_920895569.c
     ui_img_920902992.c
+    ui_img_1548409061.c
     fonts/ui_font_alarmBig.c
     fonts/ui_font_HeadingTemp.c
     fonts/ui_font_Heading_1.c

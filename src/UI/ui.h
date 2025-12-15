@@ -46,6 +46,7 @@ extern lv_anim_t * alarmRang4_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * ambientHome_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * homeFlyIn_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * booting_Animation(lv_obj_t * TargetObject, int delay);
+extern lv_anim_t * welcome_Animation(lv_obj_t * TargetObject, int delay);
 
 // EVENTS
 
@@ -53,6 +54,7 @@ extern lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
 LV_IMG_DECLARE(ui_img_1728762676);    // assets/ezgif-split/frame_00.png
+LV_IMG_DECLARE(ui_img_920910679);    // assets/ezgif-split/frame_18.png
 LV_IMG_DECLARE(ui_img_weather_icon_png);    // assets/weather_icon.png
 LV_IMG_DECLARE(ui_img_roomtemp_png);    // assets/roomTemp.png
 LV_IMG_DECLARE(ui_img_alarm_png);    // assets/alarm.png
@@ -63,7 +65,6 @@ LV_IMG_DECLARE(ui_img_weather_icon_2_png);    // assets/weather_icon_2.png
 LV_IMG_DECLARE(ui_img_alarmicon_png);    // assets/ALARMicon.png
 LV_IMG_DECLARE(ui_img_button_dissmiss_png);    // assets/BUTTON_DIssmiss.png
 LV_IMG_DECLARE(ui_img_buttonsnooze_png);    // assets/buttonSnooze.png
-LV_IMG_DECLARE(ui_img_1548409061);    // assets/dark-starry-night-sky-with-black-background_1100672-16821.png
 LV_IMG_DECLARE(ui_img_home_png);    // assets/home.png
 LV_IMG_DECLARE(ui_img_cloudy_png);    // assets/cloudy.png
 LV_IMG_DECLARE(ui_img_humidity_png);    // assets/humidity.png
@@ -84,6 +85,7 @@ LV_IMG_DECLARE(ui_img_920907340);    // assets/ezgif-split/frame_13.png
 LV_IMG_DECLARE(ui_img_920896594);    // assets/ezgif-split/frame_15.png
 LV_IMG_DECLARE(ui_img_920895569);    // assets/ezgif-split/frame_16.png
 LV_IMG_DECLARE(ui_img_920902992);    // assets/ezgif-split/frame_17.png
+LV_IMG_DECLARE(ui_img_1548409061);    // assets/dark-starry-night-sky-with-black-background_1100672-16821.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_alarmBig);
