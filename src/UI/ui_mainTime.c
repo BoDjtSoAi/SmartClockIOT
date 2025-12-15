@@ -63,9 +63,16 @@ void ui_event_mainTime(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_SCREEN_LOADED) {
+    if(event_code == LV_EVENT_SCREEN_LOAD_START) {
         homeFlyIn_Animation(ui_Container2, 0);
         ambientHome_Animation(ui_Container1, 0);
+    }
+    if(event_code == LV_EVENT_SCREEN_UNLOADED) {
+        stop_main_animations(e);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_tempatureScreen, LV_SCR_LOAD_ANIM_OVER_RIGHT, 400, 0, &ui_tempatureScreen_screen_init);
     }
 }
 

@@ -3,17 +3,14 @@
 // LVGL version: 8.3.11
 // Project name: IOTSmartClock
 
-#ifndef _UI_EVENTS_H
-#define _UI_EVENTS_H
+#ifndef _IOTSMARTCLOCK_UI_COMP_HOOK_H
+#define _IOTSMARTCLOCK_UI_COMP_HOOK_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void stop_main_animations(lv_event_t * e);
-void stop_alarm_animations(lv_event_t * e);
-void dismissAlarmButton(lv_event_t * e);
-void alarmSnooze(lv_event_t * e);
+void ui_comp_tempatureDisplay_create_hook(lv_obj_t * comp);
 
 #ifdef __cplusplus
 } /*extern "C"*/

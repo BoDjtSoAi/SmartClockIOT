@@ -29,6 +29,7 @@ extern lv_obj_t * ui_Label4;
 extern lv_obj_t * ui_Container6;
 extern void ui_event_alarmDismiss(lv_event_t * e);
 extern lv_obj_t * ui_alarmDismiss;
+extern void ui_event_alarmSnooze(lv_event_t * e);
 extern lv_obj_t * ui_alarmSnooze;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_headerLeft;

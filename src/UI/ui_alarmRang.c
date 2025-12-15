@@ -39,6 +39,9 @@ void ui_event_alarmRang(lv_event_t * e)
         alarmRang3_Animation(ui_Image8, 0);
         alarmRang4_Animation(ui_Label4, 0);
     }
+    if(event_code == LV_EVENT_SCREEN_UNLOADED) {
+        stop_alarm_animations(e);
+    }
 }
 
 void ui_event_headerLeft(lv_event_t * e)
@@ -59,13 +62,21 @@ void ui_event_alarmDismiss(lv_event_t * e)
     }
 }
 
+void ui_event_alarmSnooze(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        alarmSnooze(e);
+    }
+}
+
 // build funtions
 
 void ui_alarmRang_screen_init(void)
 {
     ui_alarmRang = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_alarmRang, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_add_event_cb(ui_alarmRang, scr_unloaded_delete_cb, LV_EVENT_SCREEN_UNLOADED, ui_alarmRang_screen_destroy);
     lv_obj_set_style_bg_grad_color(ui_alarmRang, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_alarmRang, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -186,6 +197,7 @@ void ui_alarmRang_screen_init(void)
 
     lv_obj_add_event_cb(ui_headerLeft, ui_event_headerLeft, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_alarmDismiss, ui_event_alarmDismiss, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_alarmSnooze, ui_event_alarmSnooze, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_alarmRang, ui_event_alarmRang, LV_EVENT_ALL, NULL);
     uic_headerLeft = ui_headerLeft;
     uic_dowDate = ui_dowDate;

@@ -17,7 +17,7 @@ RTC_DS3231 rtc;
 #define TRIG_PIN 18
 #define ECHO_PIN 17
 #define DETECTION_DISTANCE 30 // cm - khoảng cách phát hiện
-#define SCREEN_ON_TIME 10000  // 10 giây giữ màn hình sáng
+#define SCREEN_ON_TIME 30000  // 30 giây giữ màn hình sáng
 #define SCREEN_BRIGHTNESS 255 // Độ sáng màn hình khi bật
 
 // --- Screen Control Variables ---
@@ -106,13 +106,13 @@ void smoothBrightness()
 {
     if (currentBrightness < targetBrightness)
     {
-        currentBrightness += 2; // Tăng từ từ
+        currentBrightness += 20; // Tăng từ từ
         if (currentBrightness > targetBrightness)
             currentBrightness = targetBrightness;
     }
     else if (currentBrightness > targetBrightness)
     {
-        currentBrightness -= 2; // Giảm từ từ
+        currentBrightness -= 20; // Giảm từ từ
         if (currentBrightness < targetBrightness)
             currentBrightness = targetBrightness;
     }
@@ -285,6 +285,11 @@ void loop()
             }
         }
 
+        if (uic_day1)
+        {
+            lv_label_set_text_fmt(uic_day1, "%02d %s", now.day(), monthsOfTheYear[now.month() - 1]);
+        }
+
         // 2. Cập nhật lịch
         if (uic_CalendarMain)
         {
@@ -312,6 +317,11 @@ void loop()
             lv_label_set_text(uic_dayOfWeek, daysOfTheWeek[now.dayOfTheWeek()]);
         }
 
+        if (uic_dayOfWeek2)
+        {
+            lv_label_set_text(uic_dayOfWeek2, daysOfTheWeek[now.dayOfTheWeek()]);
+        }
+
         // 4. Cập nhật Giờ:Phút
         if (uic_hours)
         {
@@ -329,6 +339,12 @@ void loop()
         {
             String temp = String(rtc.getTemperature(), 1) + "'C";
             lv_label_set_text(uic_rtcTemp, temp.c_str());
+        }
+
+        if (uic_tempIndoor1)
+        {
+            String temp = String(rtc.getTemperature(), 1) + "'C";
+            lv_label_set_text(uic_tempIndoor1, temp.c_str());
         }
     }
 

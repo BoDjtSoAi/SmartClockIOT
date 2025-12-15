@@ -10,6 +10,7 @@
 extern "C" {
 #endif
 void dismissAlarm();
+void snoozeAlarm();
 #ifdef __cplusplus
 }
 #endif
@@ -21,3 +22,24 @@ void dismissAlarmButton(lv_event_t * e)
 	dismissAlarm();
 }
 
+void stop_main_animations(lv_event_t * e)
+{
+    lv_anim_del(ui_Container2, NULL);
+    lv_anim_del(ui_Container1, NULL);
+}
+
+void stop_alarm_animations(lv_event_t * e)
+{
+    lv_anim_del(ui_Container6, NULL);
+    lv_anim_del(ui_headerRight, NULL);
+    lv_anim_del(ui_Image7, NULL);
+    lv_anim_del(ui_headerLeft, NULL);
+    lv_anim_del(ui_Image8, NULL);
+    lv_anim_del(ui_Label4, NULL);
+}
+
+
+void alarmSnooze(lv_event_t * e)
+{
+	snoozeAlarm();
+}

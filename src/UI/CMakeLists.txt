@@ -1,6 +1,9 @@
-SET(SOURCES ui_Screen3.c
+SET(SOURCES ui_comp_tempaturedisplay.c
+    ui_comp.c
+    ui_Screen3.c
     ui_mainTime.c
     ui_alarmRang.c
+    ui_tempatureScreen.c
     ui_theme_manager.c
     ui_themes.c
     ui.c
@@ -18,6 +21,11 @@ SET(SOURCES ui_Screen3.c
     ui_img_alarmicon_png.c
     ui_img_button_dissmiss_png.c
     ui_img_buttonsnooze_png.c
+    ui_img_1548409061.c
+    ui_img_home_png.c
+    ui_img_cloudy_png.c
+    ui_img_humidity_png.c
+    ui_img_air_png.c
     ui_img_1728761651.c
     ui_img_1728760626.c
     ui_img_1728768049.c
@@ -35,11 +43,13 @@ SET(SOURCES ui_Screen3.c
     ui_img_920895569.c
     ui_img_920902992.c
     fonts/ui_font_alarmBig.c
+    fonts/ui_font_HeadingTemp.c
     fonts/ui_font_Heading_1.c
     fonts/ui_font_Heading_2.c
     fonts/ui_font_InterMedium.c
     fonts/ui_font_InterSmall.c
     fonts/ui_font_interTemp.c
+    fonts/ui_font_interTempHeader.c
     fonts/ui_font_weatherText.c)
 
 add_library(ui ${SOURCES})

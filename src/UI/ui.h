@@ -23,6 +23,8 @@ extern "C" {
 #endif
 
 #include "ui_helpers.h"
+#include "ui_comp.h"
+#include "ui_comp_hook.h"
 #include "ui_events.h"
 #include "ui_theme_manager.h"
 #include "ui_themes.h"
@@ -32,6 +34,7 @@ extern "C" {
 #include "ui_Screen3.h"
 #include "ui_mainTime.h"
 #include "ui_alarmRang.h"
+#include "ui_tempatureScreen.h"
 
 ///////////////////// VARIABLES ////////////////////
 
@@ -60,6 +63,11 @@ LV_IMG_DECLARE(ui_img_weather_icon_2_png);    // assets/weather_icon_2.png
 LV_IMG_DECLARE(ui_img_alarmicon_png);    // assets/ALARMicon.png
 LV_IMG_DECLARE(ui_img_button_dissmiss_png);    // assets/BUTTON_DIssmiss.png
 LV_IMG_DECLARE(ui_img_buttonsnooze_png);    // assets/buttonSnooze.png
+LV_IMG_DECLARE(ui_img_1548409061);    // assets/dark-starry-night-sky-with-black-background_1100672-16821.png
+LV_IMG_DECLARE(ui_img_home_png);    // assets/home.png
+LV_IMG_DECLARE(ui_img_cloudy_png);    // assets/cloudy.png
+LV_IMG_DECLARE(ui_img_humidity_png);    // assets/humidity.png
+LV_IMG_DECLARE(ui_img_air_png);    // assets/air.png
 LV_IMG_DECLARE(ui_img_1728761651);    // assets/ezgif-split/frame_01.png
 LV_IMG_DECLARE(ui_img_1728760626);    // assets/ezgif-split/frame_02.png
 LV_IMG_DECLARE(ui_img_1728768049);    // assets/ezgif-split/frame_03.png
@@ -79,11 +87,13 @@ LV_IMG_DECLARE(ui_img_920902992);    // assets/ezgif-split/frame_17.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_alarmBig);
+LV_FONT_DECLARE(ui_font_HeadingTemp);
 LV_FONT_DECLARE(ui_font_Heading_1);
 LV_FONT_DECLARE(ui_font_Heading_2);
 LV_FONT_DECLARE(ui_font_InterMedium);
 LV_FONT_DECLARE(ui_font_InterSmall);
 LV_FONT_DECLARE(ui_font_interTemp);
+LV_FONT_DECLARE(ui_font_interTempHeader);
 LV_FONT_DECLARE(ui_font_weatherText);
 
 // UI INIT
