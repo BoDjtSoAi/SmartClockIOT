@@ -7,6 +7,12 @@
 #include "LGFX_Setup.h"
 #include "ui/ui.h"
 #include <MqttService.h>
+#include <Adafruit_NeoPixel.h>
+
+// --- RGB LED ---
+#define RGB_PIN 48
+#define NUMPIXELS 1
+Adafruit_NeoPixel pixels(NUMPIXELS, RGB_PIN, NEO_GRB + NEO_KHZ800);
 
 // --- RTC Objects ---
 RTC_DS3231 rtc;
@@ -135,12 +141,20 @@ void updateWifiStatus()
             // --- TRƯỜNG HỢP 1: CÓ MẠNG ---
             lv_obj_set_style_img_recolor(uic_wifiIcon, lv_color_hex(0xFFFFFF), 0);
             lv_obj_set_style_img_recolor_opa(uic_wifiIcon, 255, 0);
+            
+            // LED Green
+            pixels.setPixelColor(0, pixels.Color(0, 50, 0));
+            pixels.show();
         }
         else
         {
             // --- TRƯỜNG HỢP 2: MẤT MẠNG ---
             lv_obj_set_style_img_recolor(uic_wifiIcon, lv_color_hex(0xFF0000), 0);
             lv_obj_set_style_img_recolor_opa(uic_wifiIcon, 200, 0);
+
+            // LED Red
+            pixels.setPixelColor(0, pixels.Color(50, 0, 0));
+            pixels.show();
         }
     }
 }
@@ -148,6 +162,12 @@ void updateWifiStatus()
 void setup()
 {
     Serial.begin(115200);
+
+    // --- Init RGB LED ---
+    pixels.begin();
+    pixels.setBrightness(20);
+    pixels.setPixelColor(0, pixels.Color(0, 0, 255)); // Blue startup
+    pixels.show();
 
     // --- Init HC-SR05 ---
     pinMode(TRIG_PIN, OUTPUT);

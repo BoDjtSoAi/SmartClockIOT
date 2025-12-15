@@ -42,6 +42,21 @@ struct AlarmConfig
 
 AlarmConfig alarm1;
 
+static lv_calendar_date_t highlighted_days[1];
+
+void updateCalendarHighlights() {
+    if (uic_CalendarMain == NULL) return;
+
+    if (alarm1.enabled) {
+        highlighted_days[0].year = alarm1.year;
+        highlighted_days[0].month = alarm1.month;
+        highlighted_days[0].day = alarm1.day;
+        lv_calendar_set_highlighted_dates(uic_CalendarMain, highlighted_days, 1);
+    } else {
+        lv_calendar_set_highlighted_dates(uic_CalendarMain, highlighted_days, 0);
+    }
+}
+
 // MQTT Broker
 const char *mqtt_server = "broker.hivemq.com";
 const int mqtt_port = 1883;
@@ -479,6 +494,7 @@ void System_Init()
   attachInterrupt(digitalPinToInterrupt(SQW_PIN), onAlarmISR, FALLING);
   
   loadAlarmConfig(); // Load alarm from flash
+  // updateCalendarHighlights(); // Removed to prevent crash on startup before UI init
 
   // Reserve heap to avoid fragmentation
   weatherMessage.reserve(512);
@@ -589,6 +605,7 @@ void setAlarmFromMQTT(const String &message)
   // Set hardware alarm for Day, Hour, Minute
   rtc.setAlarm1(dtAlarm, DS3231_A1_Date);
   Serial.println("[MQTT] Alarm set successfully");
+  updateCalendarHighlights();
 }
 
 void System_Handle_Loop()
@@ -682,6 +699,7 @@ void System_Handle_Loop()
     saveAlarmConfig();
     rtc.clearAlarm(1);
     updateAlarmUI();
+    updateCalendarHighlights();
   }
 
   // Update Alarm UI
@@ -742,6 +760,7 @@ void snoozeAlarm()
   }
   lv_disp_load_scr(ui_mainTime);
   updateAlarmUI();
+  updateCalendarHighlights();
 }
 #ifdef __cplusplus
 }
