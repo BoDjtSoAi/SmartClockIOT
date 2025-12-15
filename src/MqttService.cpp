@@ -142,6 +142,7 @@ void loadAlarmConfig() {
       rtc.clearAlarm(1);
       // Set hardware alarm for Day, Hour, Minute
       rtc.setAlarm1(DateTime(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0), DS3231_A1_Date);
+      updateCalendarHighlights();
   }
 }
 
@@ -494,7 +495,6 @@ void System_Init()
   attachInterrupt(digitalPinToInterrupt(SQW_PIN), onAlarmISR, FALLING);
   
   loadAlarmConfig(); // Load alarm from flash
-  // updateCalendarHighlights(); // Removed to prevent crash on startup before UI init
 
   // Reserve heap to avoid fragmentation
   weatherMessage.reserve(512);
