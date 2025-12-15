@@ -405,6 +405,8 @@ void dismissAlarm()
       ui_mainTime_screen_init();
   }
   lv_disp_load_scr(ui_mainTime);
+  if (uic_CalendarMain)
+  updateCalendarHighlights();
 }
 #ifdef __cplusplus
 }

@@ -35,6 +35,8 @@ extern "C" {
 #include "ui_mainTime.h"
 #include "ui_alarmRang.h"
 #include "ui_tempatureScreen.h"
+#include "ui_settings.h"
+#include "ui_settingsWifi.h"
 
 ///////////////////// VARIABLES ////////////////////
 
@@ -97,6 +99,7 @@ LV_FONT_DECLARE(ui_font_InterSmall);
 LV_FONT_DECLARE(ui_font_interTemp);
 LV_FONT_DECLARE(ui_font_interTempHeader);
 LV_FONT_DECLARE(ui_font_weatherText);
+LV_FONT_DECLARE(ui_font_Setting);
 
 // UI INIT
 void ui_init(void);

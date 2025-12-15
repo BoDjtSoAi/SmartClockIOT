@@ -4,6 +4,8 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     ui_mainTime.c
     ui_alarmRang.c
     ui_tempatureScreen.c
+    ui_settings.c
+    ui_settingsWifi.c
     ui_theme_manager.c
     ui_themes.c
     ui.c
@@ -51,6 +53,7 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     fonts/ui_font_InterSmall.c
     fonts/ui_font_interTemp.c
     fonts/ui_font_interTempHeader.c
-    fonts/ui_font_weatherText.c)
+    fonts/ui_font_weatherText.c
+    fonts/ui_font_Setting.c)
 
 add_library(ui ${SOURCES})

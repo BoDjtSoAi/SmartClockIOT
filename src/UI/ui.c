@@ -332,6 +332,8 @@ void ui_init(void)
     ui_mainTime_screen_init();
     ui_alarmRang_screen_init();
     ui_tempatureScreen_screen_init();
+    ui_settings_screen_init();
+    ui_settingsWifi_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_Screen3);
 }
@@ -342,4 +344,6 @@ void ui_destroy(void)
     ui_mainTime_screen_destroy();
     ui_alarmRang_screen_destroy();
     ui_tempatureScreen_screen_destroy();
+    ui_settings_screen_destroy();
+    ui_settingsWifi_screen_destroy();
 }

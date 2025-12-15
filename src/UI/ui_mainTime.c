@@ -74,6 +74,10 @@ void ui_event_mainTime(lv_event_t * e)
         lv_indev_wait_release(lv_indev_get_act());
         _ui_screen_change(&ui_tempatureScreen, LV_SCR_LOAD_ANIM_OVER_RIGHT, 400, 0, &ui_tempatureScreen_screen_init);
     }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_BOTTOM) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_settings, LV_SCR_LOAD_ANIM_OVER_BOTTOM, 400, 0, &ui_settings_screen_init);
+    }
 }
 
 // build funtions
