@@ -32,6 +32,7 @@ void setAutoBrightness(bool enable) {
 
 // --- Screen Control Variables ---
 unsigned long lastDetectionTime = 0;
+unsigned long lastInteractionTime = 0;
 bool screenOn = true;
 bool rtcStatus = true;
 int currentBrightness = 255;
@@ -85,6 +86,7 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     }
     else
     {
+        lastInteractionTime = millis();
         data->state = LV_INDEV_STATE_PR;
         data->point.x = touchX;
         data->point.y = touchY;
@@ -256,6 +258,13 @@ void loop()
     {
         lastBrightnessUpdate = millis();
         smoothBrightness();
+    }
+
+    // --- Auto return to main screen after 30s inactivity ---
+    if (lv_scr_act() == ui_settings || lv_scr_act() == ui_settingsWifi) {
+        if (millis() - lastInteractionTime > 30000) {
+            _ui_screen_change(&ui_mainTime, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_mainTime_screen_init);
+        }
     }
 
     // --- Logic cập nhật đồng hồ (Mỗi 1 giây chạy 1 lần) ---
