@@ -44,18 +44,24 @@ AlarmConfig alarm1;
 
 static lv_calendar_date_t highlighted_days[1];
 
-void updateCalendarHighlights() {
-    if (uic_CalendarMain == NULL) return;
-    if (!lv_obj_is_valid(uic_CalendarMain)) return; // Extra safety check
+void updateCalendarHighlights()
+{
+  if (uic_CalendarMain == NULL)
+    return;
+  if (!lv_obj_is_valid(uic_CalendarMain))
+    return; // Extra safety check
 
-    if (alarm1.enabled) {
-        highlighted_days[0].year = alarm1.year;
-        highlighted_days[0].month = alarm1.month;
-        highlighted_days[0].day = alarm1.day;
-        lv_calendar_set_highlighted_dates(uic_CalendarMain, highlighted_days, 1);
-    } else {
-        lv_calendar_set_highlighted_dates(uic_CalendarMain, highlighted_days, 0);
-    }
+  if (alarm1.enabled)
+  {
+    highlighted_days[0].year = alarm1.year;
+    highlighted_days[0].month = alarm1.month;
+    highlighted_days[0].day = alarm1.day;
+    lv_calendar_set_highlighted_dates(uic_CalendarMain, highlighted_days, 1);
+  }
+  else
+  {
+    lv_calendar_set_highlighted_dates(uic_CalendarMain, highlighted_days, 0);
+  }
 }
 
 // MQTT Broker
@@ -94,7 +100,7 @@ extern void setAutoBrightness(bool enable);
 
 // Forward declarations
 void loadSystemConfig();
-void onUpdateConfig(lv_event_t * e);
+void onUpdateConfig(lv_event_t *e);
 
 // MQTT & System
 WiFiClient espClient;
@@ -104,71 +110,85 @@ extern RTC_DS3231 rtc;
 Preferences preferences;
 Preferences wifiPreferences;
 
-void saveWifiConfig(const char* ssid, const char* pwd) {
-    wifiPreferences.begin("wifi", false);
-    wifiPreferences.putString("ssid", ssid);
-    wifiPreferences.putString("password", pwd);
-    wifiPreferences.end();
-    
-    global_ssid = String(ssid);
-    global_password = String(pwd);
-    Serial.println("[WiFi] Config saved");
+void saveWifiConfig(const char *ssid, const char *pwd)
+{
+  wifiPreferences.begin("wifi", false);
+  wifiPreferences.putString("ssid", ssid);
+  wifiPreferences.putString("password", pwd);
+  wifiPreferences.end();
+
+  global_ssid = String(ssid);
+  global_password = String(pwd);
+  Serial.println("[WiFi] Config saved");
 }
 
-void loadWifiConfig() {
-    wifiPreferences.begin("wifi", true);
-    global_ssid = wifiPreferences.getString("ssid", "");
-    global_password = wifiPreferences.getString("password", "");
-    wifiPreferences.end();
-    
-    if (global_ssid == "") {
-        Serial.println("[WiFi] No saved config, using defaults");
-        // Optional: Set default fallback if needed
-    } else {
-        Serial.println("[WiFi] Config loaded: " + global_ssid);
-    }
+void loadWifiConfig()
+{
+  wifiPreferences.begin("wifi", true);
+  global_ssid = wifiPreferences.getString("ssid", "");
+  global_password = wifiPreferences.getString("password", "");
+  wifiPreferences.end();
+
+  if (global_ssid == "")
+  {
+    Serial.println("[WiFi] No saved config, using defaults");
+    // Optional: Set default fallback if needed
+  }
+  else
+  {
+    Serial.println("[WiFi] Config loaded: " + global_ssid);
+  }
 }
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void loadWifiSettingsUI() {
+  void loadWifiSettingsUI()
+  {
     // Ensure we have the latest config
-    if (global_ssid == "") {
-        loadWifiConfig();
+    if (global_ssid == "")
+    {
+      loadWifiConfig();
     }
-    
-    if (ui_ssid) {
-        lv_textarea_set_text(ui_ssid, global_ssid.c_str());
-    }
-    if (ui_ssidPwd) {
-        lv_textarea_set_text(ui_ssidPwd, global_password.c_str());
-    }
-}
 
-void saveWifiSettingsC() {
-    if (ui_ssid && ui_ssidPwd) {
-        const char* ssid = lv_textarea_get_text(ui_ssid);
-        const char* pwd = lv_textarea_get_text(ui_ssidPwd);
-        saveWifiConfig(ssid, pwd);
-        
-        // Optional: Trigger reconnect
-        WiFi.disconnect();
-        WiFi.begin(global_ssid.c_str(), global_password.c_str());
+    if (ui_ssid)
+    {
+      lv_textarea_set_text(ui_ssid, global_ssid.c_str());
     }
-}
+    if (ui_ssidPwd)
+    {
+      lv_textarea_set_text(ui_ssidPwd, global_password.c_str());
+    }
+  }
+
+  void saveWifiSettingsC()
+  {
+    if (ui_ssid && ui_ssidPwd)
+    {
+      const char *ssid = lv_textarea_get_text(ui_ssid);
+      const char *pwd = lv_textarea_get_text(ui_ssidPwd);
+      saveWifiConfig(ssid, pwd);
+
+      // Optional: Trigger reconnect
+      WiFi.disconnect();
+      WiFi.begin(global_ssid.c_str(), global_password.c_str());
+    }
+  }
 
 #ifdef __cplusplus
 }
 #endif
 
-void saveAlarmConfig() {
+void saveAlarmConfig()
+{
   // Use a small delay to ensure stability before flash operations
   delay(10);
-  if (!preferences.begin("alarm", false)) {
-      Serial.println("[System] Failed to open preferences for saving");
-      return;
+  if (!preferences.begin("alarm", false))
+  {
+    Serial.println("[System] Failed to open preferences for saving");
+    return;
   }
   preferences.putInt("year", alarm1.year);
   preferences.putInt("month", alarm1.month);
@@ -182,7 +202,8 @@ void saveAlarmConfig() {
   Serial.println("[System] Alarm config saved");
 }
 
-void loadAlarmConfig() {
+void loadAlarmConfig()
+{
   preferences.begin("alarm", true);
   alarm1.year = preferences.getInt("year", 0);
   alarm1.month = preferences.getInt("month", 0);
@@ -194,26 +215,32 @@ void loadAlarmConfig() {
   preferences.end();
 
   // Restore RTC alarm if enabled
-  if (alarm1.enabled) {
-      DateTime now = rtc.now();
-      // Basic validation
-      if (alarm1.year < 2000 || alarm1.month < 1 || alarm1.month > 12 || alarm1.day < 1 || alarm1.day > 31) {
-          alarm1.enabled = false;
-      } else {
-          DateTime dtAlarm(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0);
-          if (dtAlarm.unixtime() <= now.unixtime()) {
-              Serial.println("[System] Loaded alarm is in the past. Disabling.");
-              alarm1.enabled = false;
-          }
+  if (alarm1.enabled)
+  {
+    DateTime now = rtc.now();
+    // Basic validation
+    if (alarm1.year < 2000 || alarm1.month < 1 || alarm1.month > 12 || alarm1.day < 1 || alarm1.day > 31)
+    {
+      alarm1.enabled = false;
+    }
+    else
+    {
+      DateTime dtAlarm(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0);
+      if (dtAlarm.unixtime() <= now.unixtime())
+      {
+        Serial.println("[System] Loaded alarm is in the past. Disabling.");
+        alarm1.enabled = false;
       }
+    }
   }
 
-  if (alarm1.enabled) {
-      rtc.disableAlarm(1);
-      rtc.clearAlarm(1);
-      // Set hardware alarm for Day, Hour, Minute
-      rtc.setAlarm1(DateTime(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0), DS3231_A1_Date);
-      updateCalendarHighlights();
+  if (alarm1.enabled)
+  {
+    rtc.disableAlarm(1);
+    rtc.clearAlarm(1);
+    // Set hardware alarm for Day, Hour, Minute
+    rtc.setAlarm1(DateTime(alarm1.year, alarm1.month, alarm1.day, alarm1.hour, alarm1.minute, 0), DS3231_A1_Date);
+    updateCalendarHighlights();
   }
 }
 
@@ -284,8 +311,9 @@ void mqttTask(void *parameter)
         lastWiFiAttempt = now;
         Serial.println("[WIFI] Not connected, attempting WiFi.begin()...");
         WiFi.disconnect();
-        if (global_ssid != "") {
-            WiFi.begin(global_ssid.c_str(), global_password.c_str());
+        if (global_ssid != "")
+        {
+          WiFi.begin(global_ssid.c_str(), global_password.c_str());
         }
       }
       // Wait a bit and continue; MQTT cannot connect without WiFi.
@@ -365,13 +393,25 @@ void processWeatherInformation(const String &message)
     lv_label_set_text(uic_cityNameSetting, city);
   }
 
-if (uic_cityNameTemp)
-{
+  if (uic_cityNameSetting2)
+  {
+    lv_label_set_text(uic_cityNameSetting2, city);
+  }
+
+  if (uic_temp2)
+  {
+    char temp2Str[50];
+    snprintf(temp2Str, sizeof(temp2Str), "%.0f'C %s", currentTemp, currentWeatherDesc);
+    lv_label_set_text(uic_temp2, temp2Str);
+  }
+
+  if (uic_cityNameTemp)
+  {
     String upperCity = String(city);
-    upperCity.toUpperCase();    
+    upperCity.toUpperCase();
     lv_label_set_text(uic_cityNameTemp, upperCity.c_str());
-}
-  
+  }
+
   if (uic_weatherTemp)
   {
     String tempStr = String(temp, 0) + "'C";
@@ -425,7 +465,6 @@ void processAirQualityInformation(const String &message)
     lv_label_set_text(uic_pm25Number1, pm25Str.c_str());
   }
 
-
   if (uic_pm10Number1)
   {
     String pm10Str = String(pm10, 1) + " ug/m3";
@@ -467,27 +506,28 @@ void setClockFromMQTT(const String &message)
 }
 
 #ifdef __cplusplus
-extern "C" {
-#endif
-void dismissAlarm()
+extern "C"
 {
-  // Turn off alarm logic
-  alarm1.enabled = false; 
-  saveAlarmConfig();
-  buzzerBeepCount = 0;
-  digitalWrite(BUZZER_PIN, LOW);
-  rtc.clearAlarm(1);
-  
-  // Switch back to main screen
-  /*if (!ui_mainTime) {
-      ui_mainTime_screen_init();
+#endif
+  void dismissAlarm()
+  {
+    // Turn off alarm logic
+    alarm1.enabled = false;
+    saveAlarmConfig();
+    buzzerBeepCount = 0;
+    digitalWrite(BUZZER_PIN, LOW);
+    rtc.clearAlarm(1);
+
+    // Switch back to main screen
+    /*if (!ui_mainTime) {
+        ui_mainTime_screen_init();
+    }
+    lv_disp_load_scr(ui_mainTime);
+    */
+
+    if (uic_CalendarMain)
+      updateCalendarHighlights();
   }
-  lv_disp_load_scr(ui_mainTime);
-  */
-  
-  if (uic_CalendarMain)
-  updateCalendarHighlights();
-}
 #ifdef __cplusplus
 }
 #endif
@@ -501,41 +541,47 @@ void checkAlarmTrigger()
     alarmFlag = false;
     rtc.clearAlarm(1); // Clear hardware flag immediately
 
-    if (!alarm1.enabled) return;
+    if (!alarm1.enabled)
+      return;
 
     DateTime now = rtc.now();
     // Safety check for invalid RTC data
-    if (now.month() < 1 || now.month() > 12) return;
+    if (now.month() < 1 || now.month() > 12)
+      return;
 
     // Check full date match (Year, Month, Day, Hour, Minute)
     // Note: Hardware alarm matches Day, Hour, Minute. We verify Month and Year here.
-    if (now.year() == alarm1.year && now.month() == alarm1.month && now.day() == alarm1.day && 
+    if (now.year() == alarm1.year && now.month() == alarm1.month && now.day() == alarm1.day &&
         now.hour() == alarm1.hour && now.minute() == alarm1.minute)
     {
       // Switch to alarm screen instead of buzzer
-      if (!ui_alarmRang) {
-          ui_alarmRang_screen_init();
+      if (!ui_alarmRang)
+      {
+        ui_alarmRang_screen_init();
       }
       lv_disp_load_scr(ui_alarmRang);
       buzzerBeepCount = 50; // Beep for 5 seconds
 
       // Feed data to the screen
       // Format date: "Monday, January 15"
-      const char* daysOfWeek[7] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-      const char* months[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+      const char *daysOfWeek[7] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+      const char *months[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
       char dateStr[50];
       snprintf(dateStr, sizeof(dateStr), "%s, %s %d", daysOfWeek[now.dayOfTheWeek()], months[now.month() - 1], now.day());
-      if(uic_dowDate) lv_label_set_text(uic_dowDate, dateStr);
+      if (uic_dowDate)
+        lv_label_set_text(uic_dowDate, dateStr);
 
       // Format weather: "38'C Sunny"
       char tempStr[50];
       snprintf(tempStr, sizeof(tempStr), "%.0f'C %s", currentTemp, currentWeatherDesc);
-      if(uic_temp) lv_label_set_text(uic_temp, tempStr);
+      if (uic_temp)
+        lv_label_set_text(uic_temp, tempStr);
 
       // Format time: "HH:MM"
       char timeStr[6];
       snprintf(timeStr, sizeof(timeStr), "%02d:%02d", now.hour(), now.minute());
-      if(uic_alarmTimeBig) lv_label_set_text(uic_alarmTimeBig, timeStr);
+      if (uic_alarmTimeBig)
+        lv_label_set_text(uic_alarmTimeBig, timeStr);
     }
   }
 }
@@ -575,21 +621,23 @@ void System_Init()
 
   // Cài đặt ngắt cho chân SQW khi có tín hiệu từ DS3231 thì gọi hàm onAlarmISR
   attachInterrupt(digitalPinToInterrupt(SQW_PIN), onAlarmISR, FALLING);
-  
+
   loadSystemConfig(); // Load system config from flash
-  
+
   // Register Update Config Event
-  if (uic_confirmSetting) {
-      lv_obj_add_event_cb(uic_confirmSetting, onUpdateConfig, LV_EVENT_CLICKED, NULL);
+  if (uic_confirmSetting)
+  {
+    lv_obj_add_event_cb(uic_confirmSetting, onUpdateConfig, LV_EVENT_CLICKED, NULL);
   }
   // Set brightness slider range and initial value
-  if (uic_brightness) {
-      lv_slider_set_range(uic_brightness, 30, 255);
-      lv_slider_set_value(uic_brightness, screenMaxBrightness, LV_ANIM_OFF);
+  if (uic_brightness)
+  {
+    lv_slider_set_range(uic_brightness, 30, 255);
+    lv_slider_set_value(uic_brightness, screenMaxBrightness, LV_ANIM_OFF);
   }
-  
-  loadAlarmConfig(); // Load alarm from flash
-  loadWifiConfig();  // Load WiFi config from flash
+
+  loadAlarmConfig();  // Load alarm from flash
+  loadWifiConfig();   // Load WiFi config from flash
   loadSystemConfig(); // Load system config from flash
 
   // Reserve heap to avoid fragmentation
@@ -603,8 +651,9 @@ void System_Init()
   // WiFi
   WiFi.setSleep(false);
   loadWifiConfig(); // Load WiFi credentials
-  if (global_ssid != "") {
-      WiFi.begin(global_ssid.c_str(), global_password.c_str());
+  if (global_ssid != "")
+  {
+    WiFi.begin(global_ssid.c_str(), global_password.c_str());
   }
   // Start WiFi connection in non-blocking mode and continue boot.
   // The mqttTask() will handle reconnects and final subscription when WiFi is available.
@@ -627,34 +676,42 @@ void System_Init()
   Serial.println("[System] Init done");
 }
 
-void updateAlarmUI() {
-    if (!uic_alarmTime || !uic_alarmStatus) return;
+void updateAlarmUI()
+{
+  if (!uic_alarmTime || !uic_alarmStatus)
+    return;
 
-    if (!alarm1.enabled) {
-        lv_label_set_text(uic_alarmTime, "--:--");
-        lv_label_set_text(uic_alarmStatus, "OFF");
-        rtc.clearAlarm(1);
-        rtc.disableAlarm(1);
-        return;
+  if (!alarm1.enabled)
+  {
+    lv_label_set_text(uic_alarmTime, "--:--");
+    lv_label_set_text(uic_alarmStatus, "OFF");
+    rtc.clearAlarm(1);
+    rtc.disableAlarm(1);
+    return;
+  }
+
+  lv_label_set_text_fmt(uic_alarmTime, "%02d:%02d", alarm1.hour, alarm1.minute);
+
+  DateTime now = rtc.now();
+  // Check if alarm is today
+  if (now.year() == alarm1.year && now.month() == alarm1.month && now.day() == alarm1.day)
+  {
+    lv_label_set_text(uic_alarmStatus, "Today");
+  }
+  // Check if alarm is tomorrow
+  else
+  {
+    DateTime tomorrow = now + TimeSpan(1, 0, 0, 0);
+    if (tomorrow.year() == alarm1.year && tomorrow.month() == alarm1.month && tomorrow.day() == alarm1.day)
+    {
+      lv_label_set_text(uic_alarmStatus, "Tmrw");
     }
-
-    lv_label_set_text_fmt(uic_alarmTime, "%02d:%02d", alarm1.hour, alarm1.minute);
-
-    DateTime now = rtc.now();
-    // Check if alarm is today
-    if (now.year() == alarm1.year && now.month() == alarm1.month && now.day() == alarm1.day) {
-         lv_label_set_text(uic_alarmStatus, "Today");
-    } 
-    // Check if alarm is tomorrow
-    else {
-        DateTime tomorrow = now + TimeSpan(1, 0, 0, 0);
-        if (tomorrow.year() == alarm1.year && tomorrow.month() == alarm1.month && tomorrow.day() == alarm1.day) {
-             lv_label_set_text(uic_alarmStatus, "Tmrw");
-        } else {
-             // Show date e.g. 16/12
-             lv_label_set_text_fmt(uic_alarmStatus, "%02d/%02d", alarm1.day, alarm1.month);
-        }
+    else
+    {
+      // Show date e.g. 16/12
+      lv_label_set_text_fmt(uic_alarmStatus, "%02d/%02d", alarm1.day, alarm1.month);
     }
+  }
 }
 
 void setAlarmFromMQTT(const String &message)
@@ -676,16 +733,18 @@ void setAlarmFromMQTT(const String &message)
   // Check if alarm is in the past (e.g. retained message)
   DateTime now = rtc.now();
   // Basic validation
-  if (year < 2000 || month < 1 || month > 12 || day < 1 || day > 31) {
-      Serial.println("[MQTT] Invalid alarm date received");
-      return;
+  if (year < 2000 || month < 1 || month > 12 || day < 1 || day > 31)
+  {
+    Serial.println("[MQTT] Invalid alarm date received");
+    return;
   }
-  
+
   DateTime dtAlarm(year, month, day, hour, minute, 0);
 
-  if (dtAlarm.unixtime() <= now.unixtime()) {
-      Serial.println("[MQTT] Ignored old alarm message");
-      return;
+  if (dtAlarm.unixtime() <= now.unixtime())
+  {
+    Serial.println("[MQTT] Ignored old alarm message");
+    return;
   }
 
   alarm1.year = year;
@@ -792,7 +851,8 @@ void System_Handle_Loop()
     }
     xSemaphoreGive(mqttMutex);
   }
-  if (delAlarmFlag) {
+  if (delAlarmFlag)
+  {
     // Dismiss alarm
     alarm1.enabled = false;
     saveAlarmConfig();
@@ -803,14 +863,15 @@ void System_Handle_Loop()
 
   // Update Alarm UI
   static unsigned long lastAlarmUIUpdate = 0;
-  if (millis() - lastAlarmUIUpdate >= 1000) {
-      lastAlarmUIUpdate = millis();
-      updateAlarmUI();
+  if (millis() - lastAlarmUIUpdate >= 1000)
+  {
+    lastAlarmUIUpdate = millis();
+    updateAlarmUI();
   }
 
   // Throttle WiFi check to avoid overhead every frame
   static unsigned long lastWifiCheck = 0;
-  if (millis() - lastWifiCheck >= 3000) 
+  if (millis() - lastWifiCheck >= 3000)
   {
     lastWifiCheck = millis();
     if (WiFi.status() != WL_CONNECTED)
@@ -820,8 +881,9 @@ void System_Handle_Loop()
       {
         lastTimeConnectWifi = currentMillis;
         WiFi.disconnect();
-        if (global_ssid != "") {
-            WiFi.begin(global_ssid.c_str(), global_password.c_str());
+        if (global_ssid != "")
+        {
+          WiFi.begin(global_ssid.c_str(), global_password.c_str());
         }
       }
     }
@@ -829,42 +891,43 @@ void System_Handle_Loop()
 }
 
 #ifdef __cplusplus
-extern "C" {
-#endif
-void snoozeAlarm()
+extern "C"
 {
-  // 1. Turn off buzzer
-  buzzerBeepCount = 0;
-  digitalWrite(BUZZER_PIN, LOW);
-  
-  // 2. Calculate new time (now + 5 mins)
-  DateTime now = rtc.now();
-  DateTime snoozeTime = now + TimeSpan(0, 0, 5, 0); // +5 minutes
+#endif
+  void snoozeAlarm()
+  {
+    // 1. Turn off buzzer
+    buzzerBeepCount = 0;
+    digitalWrite(BUZZER_PIN, LOW);
 
-  // Update alarm1 config to match snooze time so checkAlarmTrigger passes
-  alarm1.year = snoozeTime.year();
-  alarm1.month = snoozeTime.month();
-  alarm1.day = snoozeTime.day();
-  alarm1.hour = snoozeTime.hour();
-  alarm1.minute = snoozeTime.minute();
-  alarm1.enabled = true;
+    // 2. Calculate new time (now + 5 mins)
+    DateTime now = rtc.now();
+    DateTime snoozeTime = now + TimeSpan(0, 0, 5, 0); // +5 minutes
 
-  saveAlarmConfig();
+    // Update alarm1 config to match snooze time so checkAlarmTrigger passes
+    alarm1.year = snoozeTime.year();
+    alarm1.month = snoozeTime.month();
+    alarm1.day = snoozeTime.day();
+    alarm1.hour = snoozeTime.hour();
+    alarm1.minute = snoozeTime.minute();
+    alarm1.enabled = true;
 
-  // 3. Set RTC Alarm 1 to snooze time
-  rtc.clearAlarm(1);
-  rtc.setAlarm1(snoozeTime, DS3231_A1_Date); // Match Date, Hours, Minutes
+    saveAlarmConfig();
 
-  // 4. Switch back to main screen
-  /*if (!ui_mainTime) {
-      ui_mainTime_screen_init();
+    // 3. Set RTC Alarm 1 to snooze time
+    rtc.clearAlarm(1);
+    rtc.setAlarm1(snoozeTime, DS3231_A1_Date); // Match Date, Hours, Minutes
+
+    // 4. Switch back to main screen
+    /*if (!ui_mainTime) {
+        ui_mainTime_screen_init();
+    }
+    lv_disp_load_scr(ui_mainTime);
+    */
+
+    updateAlarmUI();
+    updateCalendarHighlights();
   }
-  lv_disp_load_scr(ui_mainTime);
-  */
-  
-  updateAlarmUI();
-  updateCalendarHighlights();
-}
 #ifdef __cplusplus
 }
 #endif
@@ -878,116 +941,161 @@ void snoozeAlarm()
 Preferences sysPreferences;
 int cfg_brightness = 255;
 bool cfg_autoBrightness = false;
-int cfg_timezoneIdx = 19; 
-int cfg_locationIdx = 1; 
-int cfg_timeoutIdx = 1; 
+int cfg_timezoneIdx = 19;
+int cfg_locationIdx = 1;
+int cfg_timeoutIdx = 1;
 
-void saveSystemConfig(int brightness, bool autoBright, int tzIdx, int locIdx, int toIdx) {
-    sysPreferences.begin("system", false);
-    sysPreferences.putInt("bright", brightness);
-    sysPreferences.putBool("auto", autoBright);
-    sysPreferences.putInt("tz", tzIdx);
-    sysPreferences.putInt("loc", locIdx);
-    sysPreferences.putInt("to", toIdx);
-    sysPreferences.end();
-    
-    cfg_brightness = brightness;
-    cfg_autoBrightness = autoBright;
-    cfg_timezoneIdx = tzIdx;
-    cfg_locationIdx = locIdx;
-    cfg_timeoutIdx = toIdx;
+void saveSystemConfig(int brightness, bool autoBright, int tzIdx, int locIdx, int toIdx)
+{
+  sysPreferences.begin("system", false);
+  sysPreferences.putInt("bright", brightness);
+  sysPreferences.putBool("auto", autoBright);
+  sysPreferences.putInt("tz", tzIdx);
+  sysPreferences.putInt("loc", locIdx);
+  sysPreferences.putInt("to", toIdx);
+  sysPreferences.end();
+
+  cfg_brightness = brightness;
+  cfg_autoBrightness = autoBright;
+  cfg_timezoneIdx = tzIdx;
+  cfg_locationIdx = locIdx;
+  cfg_timeoutIdx = toIdx;
 }
 
-void loadSystemConfig() {
-    sysPreferences.begin("system", true);
-    cfg_brightness = sysPreferences.getInt("bright", 255);
-    cfg_autoBrightness = sysPreferences.getBool("auto", false);
-    cfg_timezoneIdx = sysPreferences.getInt("tz", 19); 
-    cfg_locationIdx = sysPreferences.getInt("loc", 1); 
-    cfg_timeoutIdx = sysPreferences.getInt("to", 1); 
-    sysPreferences.end();
+void loadSystemConfig()
+{
+  sysPreferences.begin("system", true);
+  cfg_brightness = sysPreferences.getInt("bright", 255);
+  cfg_autoBrightness = sysPreferences.getBool("auto", false);
+  cfg_timezoneIdx = sysPreferences.getInt("tz", 19);
+  cfg_locationIdx = sysPreferences.getInt("loc", 1);
+  cfg_timeoutIdx = sysPreferences.getInt("to", 1);
+  sysPreferences.end();
 
-    // Apply to globals
-    screenMaxBrightness = cfg_brightness;
-    targetBrightness = screenMaxBrightness;
-    setAutoBrightness(cfg_autoBrightness);
-    
-    // Apply timeout
-    switch(cfg_timeoutIdx) {
-        case 0: screenTimeout = 10000; break;
-        case 1: screenTimeout = 30000; break;
-        case 2: screenTimeout = 60000; break;
-        case 3: screenTimeout = 120000; break;
-        case 4: screenTimeout = 300000; break;
-        case 5: screenTimeout = 600000; break;
-        case 6: screenTimeout = 0xFFFFFFFF; break;
-        default: screenTimeout = 30000; break;
-    }
-    Serial.println("[System] Config loaded from flash");
+  // Apply to globals
+  screenMaxBrightness = cfg_brightness;
+  targetBrightness = screenMaxBrightness;
+  setAutoBrightness(cfg_autoBrightness);
+
+  // Apply timeout
+  switch (cfg_timeoutIdx)
+  {
+  case 0:
+    screenTimeout = 10000;
+    break;
+  case 1:
+    screenTimeout = 30000;
+    break;
+  case 2:
+    screenTimeout = 60000;
+    break;
+  case 3:
+    screenTimeout = 120000;
+    break;
+  case 4:
+    screenTimeout = 300000;
+    break;
+  case 5:
+    screenTimeout = 600000;
+    break;
+  case 6:
+    screenTimeout = 0xFFFFFFFF;
+    break;
+  default:
+    screenTimeout = 30000;
+    break;
+  }
+  Serial.println("[System] Config loaded from flash");
 }
 
-extern "C" void loadSystemConfigUI() {
-    if (uic_brightness) lv_slider_set_value(uic_brightness, cfg_brightness, LV_ANIM_OFF);
-    if (uic_autoBrightness) {
-        if (cfg_autoBrightness) lv_obj_add_state(uic_autoBrightness, LV_STATE_CHECKED);
-        else lv_obj_clear_state(uic_autoBrightness, LV_STATE_CHECKED);
-    }
-    if (uic_timezoneDrop) lv_dropdown_set_selected(uic_timezoneDrop, cfg_timezoneIdx);
-    if (uic_locationDrop) lv_dropdown_set_selected(uic_locationDrop, cfg_locationIdx);
-    if (uic_timeoutRoller) lv_roller_set_selected(uic_timeoutRoller, cfg_timeoutIdx, LV_ANIM_OFF);
+extern "C" void loadSystemConfigUI()
+{
+  if (uic_brightness)
+    lv_slider_set_value(uic_brightness, cfg_brightness, LV_ANIM_OFF);
+  if (uic_autoBrightness)
+  {
+    if (cfg_autoBrightness)
+      lv_obj_add_state(uic_autoBrightness, LV_STATE_CHECKED);
+    else
+      lv_obj_clear_state(uic_autoBrightness, LV_STATE_CHECKED);
+  }
+  if (uic_timezoneDrop)
+    lv_dropdown_set_selected(uic_timezoneDrop, cfg_timezoneIdx);
+  if (uic_locationDrop)
+    lv_dropdown_set_selected(uic_locationDrop, cfg_locationIdx);
+  if (uic_timeoutRoller)
+    lv_roller_set_selected(uic_timeoutRoller, cfg_timeoutIdx, LV_ANIM_OFF);
 }
 
-void onUpdateConfig(lv_event_t * e) {
-    if (!uic_brightness || !uic_autoBrightness || !uic_timezoneDrop || !uic_locationDrop || !uic_timeoutRoller) return;
+void onUpdateConfig(lv_event_t *e)
+{
+  if (!uic_brightness || !uic_autoBrightness || !uic_timezoneDrop || !uic_locationDrop || !uic_timeoutRoller)
+    return;
 
-    // 1. Brightness
-    int brightnessVal = lv_slider_get_value(uic_brightness);
-    if (brightnessVal < 30) brightnessVal = 30; // Ensure minimum brightness
-    screenMaxBrightness = brightnessVal;
-    targetBrightness = screenMaxBrightness; 
+  // 1. Brightness
+  int brightnessVal = lv_slider_get_value(uic_brightness);
+  if (brightnessVal < 30)
+    brightnessVal = 30; // Ensure minimum brightness
+  screenMaxBrightness = brightnessVal;
+  targetBrightness = screenMaxBrightness;
 
-    // 2. Auto Brightness
-    bool autoBright = lv_obj_has_state(uic_autoBrightness, LV_STATE_CHECKED);
-    setAutoBrightness(autoBright);
+  // 2. Auto Brightness
+  bool autoBright = lv_obj_has_state(uic_autoBrightness, LV_STATE_CHECKED);
+  setAutoBrightness(autoBright);
 
-    // 3. Timezone
-    char timezoneBuf[64];
-    lv_dropdown_get_selected_str(uic_timezoneDrop, timezoneBuf, sizeof(timezoneBuf));
-    int tzIdx = lv_dropdown_get_selected(uic_timezoneDrop);
+  // 3. Timezone
+  char timezoneBuf[64];
+  lv_dropdown_get_selected_str(uic_timezoneDrop, timezoneBuf, sizeof(timezoneBuf));
+  int tzIdx = lv_dropdown_get_selected(uic_timezoneDrop);
 
-    // 4. Location
-    char locationBuf[64];
-    lv_dropdown_get_selected_str(uic_locationDrop, locationBuf, sizeof(locationBuf));
-    int locIdx = lv_dropdown_get_selected(uic_locationDrop);
+  // 4. Location
+  char locationBuf[64];
+  lv_dropdown_get_selected_str(uic_locationDrop, locationBuf, sizeof(locationBuf));
+  int locIdx = lv_dropdown_get_selected(uic_locationDrop);
 
-    // 5. Timeout
-    uint16_t timeoutIdx = lv_roller_get_selected(uic_timeoutRoller);
-    // Options: "10s\n30s\n1m\n2m\n5m\n10m\nAlways On"
-    switch(timeoutIdx) {
-        case 0: screenTimeout = 10000; break;
-        case 1: screenTimeout = 30000; break;
-        case 2: screenTimeout = 60000; break;
-        case 3: screenTimeout = 120000; break;
-        case 4: screenTimeout = 300000; break;
-        case 5: screenTimeout = 600000; break;
-        case 6: screenTimeout = 0xFFFFFFFF; break; // Always on
-        default: screenTimeout = 30000; break;
-    }
+  // 5. Timeout
+  uint16_t timeoutIdx = lv_roller_get_selected(uic_timeoutRoller);
+  // Options: "10s\n30s\n1m\n2m\n5m\n10m\nAlways On"
+  switch (timeoutIdx)
+  {
+  case 0:
+    screenTimeout = 10000;
+    break;
+  case 1:
+    screenTimeout = 30000;
+    break;
+  case 2:
+    screenTimeout = 60000;
+    break;
+  case 3:
+    screenTimeout = 120000;
+    break;
+  case 4:
+    screenTimeout = 300000;
+    break;
+  case 5:
+    screenTimeout = 600000;
+    break;
+  case 6:
+    screenTimeout = 0xFFFFFFFF;
+    break; // Always on
+  default:
+    screenTimeout = 30000;
+    break;
+  }
 
-    // Save to flash
-    saveSystemConfig(brightnessVal, autoBright, tzIdx, locIdx, timeoutIdx);
+  // Save to flash
+  saveSystemConfig(brightnessVal, autoBright, tzIdx, locIdx, timeoutIdx);
 
-    // 6. Publish MQTT
-    StaticJsonDocument<512> doc;
-    doc["device_id"] = "esp32_01"; 
-    doc["timezone"] = timezoneBuf;
-    doc["location"] = locationBuf;
+  // 6. Publish MQTT
+  StaticJsonDocument<512> doc;
+  doc["device_id"] = "esp32_01";
+  doc["timezone"] = timezoneBuf;
+  doc["location"] = locationBuf;
 
-    char buffer[512];
-    serializeJson(doc, buffer);
-    client.publish("iot/esp32/telemetry", buffer);
-    
-    Serial.println("[System] Config updated and published");
+  char buffer[512];
+  serializeJson(doc, buffer);
+  client.publish("iot/esp32/telemetry", buffer);
+
+  Serial.println("[System] Config updated and published");
 }
-
-

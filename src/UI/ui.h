@@ -96,6 +96,7 @@ LV_IMG_DECLARE(ui_img_920907340);    // assets/ezgif-split/frame_13.png
 LV_IMG_DECLARE(ui_img_920896594);    // assets/ezgif-split/frame_15.png
 LV_IMG_DECLARE(ui_img_920895569);    // assets/ezgif-split/frame_16.png
 LV_IMG_DECLARE(ui_img_920902992);    // assets/ezgif-split/frame_17.png
+LV_IMG_DECLARE(ui_img_1548409061);    // assets/dark-starry-night-sky-with-black-background_1100672-16821.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_alarmBig);

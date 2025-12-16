@@ -17,6 +17,9 @@ void alarmSnooze(lv_event_t * e);
 void loadWifiSettings(lv_event_t * e);
 void saveWifiSettings(lv_event_t * e);
 void systemConfig(lv_event_t * e);
+void timer_start(lv_event_t * e);
+void timer_dismiss(lv_event_t * e);
+void timer_pause(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

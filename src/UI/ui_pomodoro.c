@@ -23,6 +23,9 @@ lv_obj_t * uic_headerTimer;
 lv_obj_t * uic_timerIcon;
 lv_obj_t * uic_contTimer;
 lv_obj_t * uic_countDown;
+lv_obj_t * uic_temp2;
+lv_obj_t * uic_cityNameSetting2;
+lv_obj_t * uic_systemTime2;
 lv_obj_t * uic_pomodoro;
 lv_obj_t * ui_pomodoro = NULL;
 lv_obj_t * ui_Container12 = NULL;
@@ -91,6 +94,32 @@ void ui_event_btnControl(lv_event_t * e)
         _ui_flag_modify(ui_contTimer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
         _ui_flag_modify(ui_contBtnRUN, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
         _ui_flag_modify(ui_countDown, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+        timer_start(e);
+    }
+}
+
+void ui_event_btnDismiss1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        timer_dismiss(e);
+    }
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_flag_modify(ui_contBtn, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+        _ui_flag_modify(ui_contBtnRUN, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+        _ui_flag_modify(ui_SetupTime, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+        _ui_flag_modify(ui_contTimer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+        _ui_flag_modify(ui_countDown, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+    }
+}
+
+void ui_event_btnControl1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        timer_pause(e);
     }
 }
 
@@ -100,10 +129,10 @@ void ui_pomodoro_screen_init(void)
 {
     ui_pomodoro = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_pomodoro, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_add_event_cb(ui_pomodoro, scr_unloaded_delete_cb, LV_EVENT_SCREEN_UNLOADED, ui_pomodoro_screen_destroy);
     lv_obj_set_style_bg_color(ui_pomodoro, lv_color_hex(0x666666), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_pomodoro, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_color(ui_pomodoro, lv_color_hex(0x4F0566), LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_object_set_themeable_style_property(ui_pomodoro, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_GRAD_COLOR,
+                                           _ui_theme_color_BlueBG);
     lv_obj_set_style_bg_grad_dir(ui_pomodoro, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Container12 = lv_obj_create(ui_pomodoro);
@@ -268,8 +297,7 @@ void ui_pomodoro_screen_init(void)
 
     ui_rollHour = lv_roller_create(ui_PanelrollHour);
     lv_roller_set_options(ui_rollHour,
-                          "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23",
-                          LV_ROLLER_MODE_INFINITE);
+                          "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23", LV_ROLLER_MODE_NORMAL);
     lv_obj_set_width(ui_rollHour, 38);
     lv_obj_set_height(ui_rollHour, 100);
     lv_obj_set_x(ui_rollHour, -8);
@@ -314,7 +342,7 @@ void ui_pomodoro_screen_init(void)
     ui_rollMinutes = lv_roller_create(ui_PanelrollMin);
     lv_roller_set_options(ui_rollMinutes,
                           "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59",
-                          LV_ROLLER_MODE_INFINITE);
+                          LV_ROLLER_MODE_NORMAL);
     lv_obj_set_width(ui_rollMinutes, 38);
     lv_obj_set_height(ui_rollMinutes, 100);
     lv_obj_set_x(ui_rollMinutes, -8);
@@ -363,7 +391,7 @@ void ui_pomodoro_screen_init(void)
     ui_rollSeconds = lv_roller_create(ui_PanelrollSecond);
     lv_roller_set_options(ui_rollSeconds,
                           "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59",
-                          LV_ROLLER_MODE_INFINITE);
+                          LV_ROLLER_MODE_NORMAL);
     lv_obj_set_width(ui_rollSeconds, 38);
     lv_obj_set_height(ui_rollSeconds, 100);
     lv_obj_set_x(ui_rollSeconds, -8);
@@ -484,7 +512,12 @@ void ui_pomodoro_screen_init(void)
     lv_obj_add_event_cb(ui_ImgButton2, ui_event_ImgButton2, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_btnDismiss, ui_event_btnDismiss, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_btnControl, ui_event_btnControl, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_btnDismiss1, ui_event_btnDismiss1, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_btnControl1, ui_event_btnControl1, LV_EVENT_ALL, NULL);
     uic_pomodoro = ui_pomodoro;
+    uic_systemTime2 = ui_systemTime2;
+    uic_cityNameSetting2 = ui_cityNameSetting2;
+    uic_temp2 = ui_temp2;
     uic_countDown = ui_countDown;
     uic_contTimer = ui_contTimer;
     uic_timerIcon = ui_timerIcon;
@@ -518,9 +551,12 @@ void ui_pomodoro_screen_destroy(void)
     ui_Container14 = NULL;
     ui_ImgButton2 = NULL;
     ui_Container13 = NULL;
+    uic_systemTime2 = NULL;
     ui_systemTime2 = NULL;
+    uic_cityNameSetting2 = NULL;
     ui_cityNameSetting2 = NULL;
     ui_headerRight2 = NULL;
+    uic_temp2 = NULL;
     ui_temp2 = NULL;
     ui_Image11 = NULL;
     uic_countDown = NULL;

@@ -131,7 +131,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_height(ui_dayOfWeek, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_dayOfWeek, -13);
     lv_obj_set_y(ui_dayOfWeek, -18);
-    lv_label_set_text(ui_dayOfWeek, "STARTING");
+    lv_label_set_text(ui_dayOfWeek, "TIMER");
     lv_obj_set_style_text_color(ui_dayOfWeek, lv_color_hex(0x137FEC), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_dayOfWeek, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_letter_space(ui_dayOfWeek, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -144,7 +144,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_x(ui_dateMonth, -16);
     lv_obj_set_y(ui_dateMonth, 10);
     lv_obj_set_align(ui_dateMonth, LV_ALIGN_BOTTOM_LEFT);
-    lv_label_set_text(ui_dateMonth, "PROJECT...");
+    lv_label_set_text(ui_dateMonth, "-01:59:38");
     lv_obj_set_style_text_letter_space(ui_dateMonth, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_line_space(ui_dateMonth, 40, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_dateMonth, &ui_font_Heading_1, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -167,7 +167,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_x(ui_hours, -6);
     lv_obj_set_y(ui_hours, -10);
     lv_obj_set_align(ui_hours, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_hours, "00:00");
+    lv_label_set_text(ui_hours, "88:88");
     lv_obj_set_style_text_letter_space(ui_hours, -7, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_line_space(ui_hours, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui_hours, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -176,7 +176,7 @@ void ui_mainTime_screen_init(void)
     ui_seconds = lv_label_create(ui_timePanel);
     lv_obj_set_width(ui_seconds, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_seconds, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_seconds, 183);
+    lv_obj_set_x(ui_seconds, 184);
     lv_obj_set_y(ui_seconds, -30);
     lv_obj_set_align(ui_seconds, LV_ALIGN_BOTTOM_LEFT);
     lv_label_set_text(ui_seconds, ":88");

@@ -333,6 +333,7 @@ void ui_init(void)
     ui_alarmRang_screen_init();
     ui_tempatureScreen_screen_init();
     ui_settings_screen_init();
+    ui_pomodoro_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_Screen3);
 }
@@ -344,4 +345,5 @@ void ui_destroy(void)
     ui_alarmRang_screen_destroy();
     ui_tempatureScreen_screen_destroy();
     ui_settings_screen_destroy();
+    ui_pomodoro_screen_destroy();
 }

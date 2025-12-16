@@ -50,10 +50,15 @@ extern void ui_event_btnControl(lv_event_t * e);
 extern lv_obj_t * ui_btnControl;
 extern lv_obj_t * ui_Label11;
 extern lv_obj_t * ui_contBtnRUN;
+extern void ui_event_btnDismiss1(lv_event_t * e);
 extern lv_obj_t * ui_btnDismiss1;
+extern void ui_event_btnControl1(lv_event_t * e);
 extern lv_obj_t * ui_btnControl1;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_pomodoro;
+extern lv_obj_t * uic_systemTime2;
+extern lv_obj_t * uic_cityNameSetting2;
+extern lv_obj_t * uic_temp2;
 extern lv_obj_t * uic_countDown;
 extern lv_obj_t * uic_contTimer;
 extern lv_obj_t * uic_timerIcon;

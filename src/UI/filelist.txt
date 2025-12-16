@@ -49,6 +49,7 @@ ui_img_920907340.c
 ui_img_920896594.c
 ui_img_920895569.c
 ui_img_920902992.c
+ui_img_1548409061.c
 fonts/ui_font_alarmBig.c
 fonts/ui_font_HeadingTemp.c
 fonts/ui_font_Heading_1.c

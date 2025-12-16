@@ -8,6 +8,7 @@
 #include "ui/ui.h"
 #include <MqttService.h>
 #include <Adafruit_NeoPixel.h>
+#include "TimerService.h"
 
 // --- RGB LED ---
 #define RGB_PIN 48
@@ -348,14 +349,16 @@ void loop()
         // 1. Cập nhật Ngày/Tháng
         if (uic_dateMonth)
         {
-            lv_label_set_text_fmt(uic_dateMonth, "%02d %s", now.day(), monthsOfTheYear[now.month() - 1]);
-            if (!rtcStatus)
-            {
-                if (uic_Container5)
-                    lv_obj_set_style_bg_color(uic_Container5, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
-                if (uic_cityName)
-                    lv_label_set_text(uic_cityName, "Love u");
-                rtcStatus = true;
+            if (!Timer_IsActive()) {
+                lv_label_set_text_fmt(uic_dateMonth, "%02d %s", now.day(), monthsOfTheYear[now.month() - 1]);
+                if (!rtcStatus)
+                {
+                    if (uic_Container5)
+                        lv_obj_set_style_bg_color(uic_Container5, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    if (uic_cityName)
+                        lv_label_set_text(uic_cityName, "Love u");
+                    rtcStatus = true;
+                }
             }
         }
 
@@ -388,7 +391,9 @@ void loop()
         // 3. Cập nhật Thứ
         if (uic_dayOfWeek)
         {
-            lv_label_set_text(uic_dayOfWeek, daysOfTheWeek[now.dayOfTheWeek()]);
+            if (!Timer_IsActive()) {
+                lv_label_set_text(uic_dayOfWeek, daysOfTheWeek[now.dayOfTheWeek()]);
+            }
         }
 
         if (uic_dayOfWeek2)
@@ -404,6 +409,11 @@ void loop()
         if (uic_systemTime)
         {
             lv_label_set_text_fmt(uic_systemTime, "%02d:%02d", now.hour(), now.minute());
+        }
+
+        if (uic_systemTime2)
+        {
+            lv_label_set_text_fmt(uic_systemTime2, "%02d:%02d", now.hour(), now.minute());
         }
 
         // 5. Cập nhật Giây
@@ -432,5 +442,6 @@ void loop()
         last_check = millis();
     }
     System_Handle_Loop();
+    Timer_Loop();
     delay(3); // Nhường CPU để không bị nóng
 }

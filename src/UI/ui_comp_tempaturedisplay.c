@@ -27,6 +27,13 @@ lv_obj_t * ui_tempatureDisplay_create(lv_obj_t * comp_parent)
     lv_obj_set_y(cui_displayTemp, -30);
     lv_obj_set_align(cui_displayTemp, LV_ALIGN_CENTER);
     lv_obj_clear_flag(cui_displayTemp, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(cui_displayTemp, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(cui_displayTemp, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_clip_corner(cui_displayTemp, true, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_img_src(cui_displayTemp, &ui_img_1548409061, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_img_opa(cui_displayTemp, 150, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(cui_displayTemp, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(cui_displayTemp, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t * cui_indoor;
     cui_indoor = lv_label_create(cui_displayTemp);
@@ -50,6 +57,7 @@ lv_obj_t * ui_tempatureDisplay_create(lv_obj_t * comp_parent)
 
     lv_obj_t * cui_IndoorIcon;
     cui_IndoorIcon = lv_img_create(cui_displayTemp);
+    lv_img_set_src(cui_IndoorIcon, &ui_img_home_png);
     lv_obj_set_width(cui_IndoorIcon, 26);
     lv_obj_set_height(cui_IndoorIcon, 27);
     lv_obj_set_x(cui_IndoorIcon, 67);
@@ -113,6 +121,7 @@ lv_obj_t * ui_tempatureDisplay_create(lv_obj_t * comp_parent)
 
     lv_obj_t * cui_decsIcon;
     cui_decsIcon = lv_img_create(cui_panelDayMonth);
+    lv_img_set_src(cui_decsIcon, &ui_img_cloudy_png);
     lv_obj_set_width(cui_decsIcon, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(cui_decsIcon, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(cui_decsIcon, -110);
@@ -183,6 +192,7 @@ lv_obj_t * ui_tempatureDisplay_create(lv_obj_t * comp_parent)
 
     lv_obj_t * cui_humIcon;
     cui_humIcon = lv_img_create(cui_Hum);
+    lv_img_set_src(cui_humIcon, &ui_img_humidity_png);
     lv_obj_set_width(cui_humIcon, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(cui_humIcon, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(cui_humIcon, 0);
@@ -230,6 +240,7 @@ lv_obj_t * ui_tempatureDisplay_create(lv_obj_t * comp_parent)
 
     lv_obj_t * cui_airIcon;
     cui_airIcon = lv_img_create(cui_AQI);
+    lv_img_set_src(cui_airIcon, &ui_img_air_png);
     lv_obj_set_width(cui_airIcon, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(cui_airIcon, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(cui_airIcon, 0);
@@ -448,6 +459,7 @@ lv_obj_t * ui_tempatureDisplay_create(lv_obj_t * comp_parent)
 
     lv_obj_t * cui_Image1;
     cui_Image1 = lv_img_create(cui_tempatureDisplay);
+    lv_img_set_src(cui_Image1, &ui_img_roomtemp_png);
     lv_obj_set_width(cui_Image1, LV_SIZE_CONTENT);   /// 60
     lv_obj_set_height(cui_Image1, LV_SIZE_CONTENT);    /// 72
     lv_obj_set_x(cui_Image1, -45);
