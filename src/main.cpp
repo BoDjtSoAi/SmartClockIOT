@@ -19,15 +19,22 @@ RTC_DS3231 rtc;
 #define I2C_SDA 42
 #define I2C_SCL 41
 
+// LDR
+#define LDR_PIN 7
+unsigned long lastLDRReadTime = 0;
+int ambientBrightness = 255;
+bool autoBrightnessEnabled = true;
+
 // --- HC-SR05 Ultrasonic Sensor ---
 #define TRIG_PIN 18
 #define ECHO_PIN 17
-#define DETECTION_DISTANCE 30 // cm - khoảng cách phát hiện
-unsigned long screenTimeout = 30000;  // 30 giây giữ màn hình sáng
-int screenMaxBrightness = 255; // Độ sáng màn hình khi bật
+#define DETECTION_DISTANCE 30        // cm - khoảng cách phát hiện
+unsigned long screenTimeout = 30000; // 30 giây giữ màn hình sáng
+int screenMaxBrightness = 255;       // Độ sáng màn hình khi bật
 
-void setAutoBrightness(bool enable) {
-    // Empty for now 
+void setAutoBrightness(bool enable)
+{
+    autoBrightnessEnabled = enable;
 }
 
 // --- Screen Control Variables ---
@@ -145,7 +152,7 @@ void updateWifiStatus()
             // --- TRƯỜNG HỢP 1: CÓ MẠNG ---
             lv_obj_set_style_img_recolor(uic_wifiIcon, lv_color_hex(0xFFFFFF), 0);
             lv_obj_set_style_img_recolor_opa(uic_wifiIcon, 255, 0);
-            
+
             // LED Green
             pixels.setPixelColor(0, pixels.Color(0, 50, 0));
             pixels.show();
@@ -163,6 +170,28 @@ void updateWifiStatus()
     }
 }
 
+void updateLDR()
+{
+    if (!autoBrightnessEnabled)
+        return;
+    int ldrValue = analogRead(LDR_PIN);
+    // map theo ánh sáng môi trường
+    ambientBrightness = map(ldrValue, 0, 240, 30, 255);
+    ambientBrightness = constrain(ambientBrightness, 30, 255);
+}
+
+void updateTargetBrightness()
+{
+    if (!screenOn)
+    {
+        targetBrightness = 0; // ultrasonic
+    }
+    else if (autoBrightnessEnabled)
+    {
+        targetBrightness = ambientBrightness; // LDR
+    }
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -176,6 +205,9 @@ void setup()
     // --- Init HC-SR05 ---
     pinMode(TRIG_PIN, OUTPUT);
     pinMode(ECHO_PIN, INPUT);
+
+    // --- Init LDR Pin ---
+    pinMode(LDR_PIN, INPUT);
 
     // --- 1. Init RTC ---
     Wire.begin(I2C_SDA, I2C_SCL);
@@ -235,11 +267,7 @@ void loop()
         {
             // Có người gần → Bật màn hình
             lastDetectionTime = millis();
-            if (!screenOn)
-            {
-                screenOn = true;
-                targetBrightness = screenMaxBrightness;
-            }
+            screenOn = true;
         }
     }
 
@@ -247,8 +275,18 @@ void loop()
     if (screenOn && (millis() - lastDetectionTime > screenTimeout))
     {
         screenOn = false;
-        targetBrightness = 0;
     }
+
+    // LDR mỗi 8s
+    static unsigned long lastLDR = 0;
+    if (millis() - lastLDR > 3000)
+    {
+        lastLDR = millis();
+        updateLDR();
+    }
+
+    // cập nhật target
+    updateTargetBrightness();
 
     // --- Điều chỉnh độ sáng từ từ ---
     static unsigned long lastBrightnessUpdate = 0;
@@ -273,8 +311,7 @@ void loop()
         if (
             now.month() < 1 || now.month() > 12 ||
             now.day() < 1 || now.day() > 31 ||
-            now.hour() > 23 || now.minute() > 59 || now.second() > 59
-        )
+            now.hour() > 23 || now.minute() > 59 || now.second() > 59)
         {
             Serial.println("[RTC] Error: Invalid time read (RTC disconnected?)");
             rtcStatus = false;
@@ -304,7 +341,7 @@ void loop()
                 if (uic_Container5)
                     lv_obj_set_style_bg_color(uic_Container5, lv_color_hex(0x062340), LV_PART_MAIN | LV_STATE_DEFAULT);
                 if (uic_cityName)
-                lv_label_set_text(uic_cityName, "Love u");
+                    lv_label_set_text(uic_cityName, "Love u");
                 rtcStatus = true;
             }
         }
