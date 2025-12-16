@@ -46,6 +46,7 @@ static lv_calendar_date_t highlighted_days[1];
 
 void updateCalendarHighlights() {
     if (uic_CalendarMain == NULL) return;
+    if (!lv_obj_is_valid(uic_CalendarMain)) return; // Extra safety check
 
     if (alarm1.enabled) {
         highlighted_days[0].year = alarm1.year;
