@@ -67,6 +67,7 @@ void ui_event_settings(lv_event_t * e)
     }
     if(event_code == LV_EVENT_SCREEN_LOADED) {
         _ui_label_set_property(ui_SystemSettingHeader, _UI_LABEL_PROPERTY_TEXT, "System Settings");
+        systemConfig(e);
     }
 }
 
@@ -85,7 +86,7 @@ void ui_event_defaultSetting(lv_event_t * e)
 
     if(event_code == LV_EVENT_LONG_PRESSED) {
         _ui_label_set_property(ui_SystemSettingHeader, _UI_LABEL_PROPERTY_TEXT, "Default Loaded!");
-        _ui_slider_set_property(ui_brightness, _UI_SLIDER_PROPERTY_VALUE, 100);
+        _ui_slider_set_property(ui_brightness, _UI_SLIDER_PROPERTY_VALUE, 255);
         _ui_dropdown_set_property(ui_timezoneDrop, _UI_DROPDOWN_PROPERTY_SELECTED, 19);
         _ui_dropdown_set_property(ui_locationDrop, _UI_DROPDOWN_PROPERTY_SELECTED, 1);
         _ui_roller_set_property(ui_timeoutRoller, _UI_ROLLER_PROPERTY_SELECTED_WITH_ANIM, 2);
@@ -199,6 +200,7 @@ void ui_settings_screen_init(void)
     lv_obj_set_style_text_font(ui_Label5, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_brightness = lv_slider_create(ui_setting1);
+    lv_slider_set_range(ui_brightness, 80, 255);
     lv_slider_set_value(ui_brightness, 0, LV_ANIM_OFF);
     if(lv_slider_get_mode(ui_brightness) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_brightness, 0, LV_ANIM_OFF);
     lv_obj_set_width(ui_brightness, lv_pct(38));
@@ -331,7 +333,7 @@ void ui_settings_screen_init(void)
     lv_label_set_text(ui_Label13, "Timeout");
 
     ui_timeoutRoller = lv_roller_create(ui_setting6);
-    lv_roller_set_options(ui_timeoutRoller, "10s\n30s\n1m\n2m\n5m\n10m\nAlways On", LV_ROLLER_MODE_NORMAL);
+    lv_roller_set_options(ui_timeoutRoller, "10s\n30s\n1m\n2m\n5m\n10m\nAlways On", LV_ROLLER_MODE_INFINITE);
     lv_obj_set_width(ui_timeoutRoller, 113);
     lv_obj_set_height(ui_timeoutRoller, lv_pct(343));
     lv_obj_set_align(ui_timeoutRoller, LV_ALIGN_CENTER);

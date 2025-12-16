@@ -13,6 +13,7 @@ void dismissAlarm();
 void snoozeAlarm();
 void saveWifiSettingsC();
 void loadWifiSettingsUI();
+void loadSystemConfigUI();
 #ifdef __cplusplus
 }
 #endif
@@ -54,4 +55,9 @@ void saveWifiSettings(lv_event_t * e)
 void loadWifiSettings(lv_event_t * e)
 {
     loadWifiSettingsUI();
+}
+
+void systemConfig(lv_event_t * e)
+{
+	loadSystemConfigUI();
 }

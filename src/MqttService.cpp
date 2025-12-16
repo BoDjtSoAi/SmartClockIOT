@@ -86,6 +86,16 @@ bool newClock = false;
 bool newAlarm = false;
 bool newDeleteAlarm = false;
 
+// Externs from main.cpp
+extern unsigned long screenTimeout;
+extern int screenMaxBrightness;
+extern int targetBrightness;
+extern void setAutoBrightness(bool enable);
+
+// Forward declarations
+void loadSystemConfig();
+void onUpdateConfig(lv_event_t * e);
+
 // MQTT & System
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -566,8 +576,21 @@ void System_Init()
   // Cài đặt ngắt cho chân SQW khi có tín hiệu từ DS3231 thì gọi hàm onAlarmISR
   attachInterrupt(digitalPinToInterrupt(SQW_PIN), onAlarmISR, FALLING);
   
+  loadSystemConfig(); // Load system config from flash
+  
+  // Register Update Config Event
+  if (uic_confirmSetting) {
+      lv_obj_add_event_cb(uic_confirmSetting, onUpdateConfig, LV_EVENT_CLICKED, NULL);
+  }
+  // Set brightness slider range and initial value
+  if (uic_brightness) {
+      lv_slider_set_range(uic_brightness, 0, 255);
+      lv_slider_set_value(uic_brightness, screenMaxBrightness, LV_ANIM_OFF);
+  }
+  
   loadAlarmConfig(); // Load alarm from flash
   loadWifiConfig();  // Load WiFi config from flash
+  loadSystemConfig(); // Load system config from flash
 
   // Reserve heap to avoid fragmentation
   weatherMessage.reserve(512);
@@ -845,5 +868,125 @@ void snoozeAlarm()
 #ifdef __cplusplus
 }
 #endif
+
+// Externs from main.cpp
+// extern unsigned long screenTimeout;
+// extern int screenMaxBrightness;
+// extern int targetBrightness;
+// extern void setAutoBrightness(bool enable);
+
+Preferences sysPreferences;
+int cfg_brightness = 255;
+bool cfg_autoBrightness = false;
+int cfg_timezoneIdx = 19; 
+int cfg_locationIdx = 1; 
+int cfg_timeoutIdx = 1; 
+
+void saveSystemConfig(int brightness, bool autoBright, int tzIdx, int locIdx, int toIdx) {
+    sysPreferences.begin("system", false);
+    sysPreferences.putInt("bright", brightness);
+    sysPreferences.putBool("auto", autoBright);
+    sysPreferences.putInt("tz", tzIdx);
+    sysPreferences.putInt("loc", locIdx);
+    sysPreferences.putInt("to", toIdx);
+    sysPreferences.end();
+    
+    cfg_brightness = brightness;
+    cfg_autoBrightness = autoBright;
+    cfg_timezoneIdx = tzIdx;
+    cfg_locationIdx = locIdx;
+    cfg_timeoutIdx = toIdx;
+}
+
+void loadSystemConfig() {
+    sysPreferences.begin("system", true);
+    cfg_brightness = sysPreferences.getInt("bright", 255);
+    cfg_autoBrightness = sysPreferences.getBool("auto", false);
+    cfg_timezoneIdx = sysPreferences.getInt("tz", 19); 
+    cfg_locationIdx = sysPreferences.getInt("loc", 1); 
+    cfg_timeoutIdx = sysPreferences.getInt("to", 1); 
+    sysPreferences.end();
+
+    // Apply to globals
+    screenMaxBrightness = cfg_brightness;
+    targetBrightness = screenMaxBrightness;
+    setAutoBrightness(cfg_autoBrightness);
+    
+    // Apply timeout
+    switch(cfg_timeoutIdx) {
+        case 0: screenTimeout = 10000; break;
+        case 1: screenTimeout = 30000; break;
+        case 2: screenTimeout = 60000; break;
+        case 3: screenTimeout = 120000; break;
+        case 4: screenTimeout = 300000; break;
+        case 5: screenTimeout = 600000; break;
+        case 6: screenTimeout = 0xFFFFFFFF; break;
+        default: screenTimeout = 30000; break;
+    }
+    Serial.println("[System] Config loaded from flash");
+}
+
+extern "C" void loadSystemConfigUI() {
+    if (uic_brightness) lv_slider_set_value(uic_brightness, cfg_brightness, LV_ANIM_OFF);
+    if (uic_autoBrightness) {
+        if (cfg_autoBrightness) lv_obj_add_state(uic_autoBrightness, LV_STATE_CHECKED);
+        else lv_obj_clear_state(uic_autoBrightness, LV_STATE_CHECKED);
+    }
+    if (uic_timezoneDrop) lv_dropdown_set_selected(uic_timezoneDrop, cfg_timezoneIdx);
+    if (uic_locationDrop) lv_dropdown_set_selected(uic_locationDrop, cfg_locationIdx);
+    if (uic_timeoutRoller) lv_roller_set_selected(uic_timeoutRoller, cfg_timeoutIdx, LV_ANIM_OFF);
+}
+
+void onUpdateConfig(lv_event_t * e) {
+    if (!uic_brightness || !uic_autoBrightness || !uic_timezoneDrop || !uic_locationDrop || !uic_timeoutRoller) return;
+
+    // 1. Brightness
+    int brightnessVal = lv_slider_get_value(uic_brightness);
+    screenMaxBrightness = brightnessVal;
+    targetBrightness = screenMaxBrightness; 
+
+    // 2. Auto Brightness
+    bool autoBright = lv_obj_has_state(uic_autoBrightness, LV_STATE_CHECKED);
+    setAutoBrightness(autoBright);
+
+    // 3. Timezone
+    char timezoneBuf[64];
+    lv_dropdown_get_selected_str(uic_timezoneDrop, timezoneBuf, sizeof(timezoneBuf));
+    int tzIdx = lv_dropdown_get_selected(uic_timezoneDrop);
+
+    // 4. Location
+    char locationBuf[64];
+    lv_dropdown_get_selected_str(uic_locationDrop, locationBuf, sizeof(locationBuf));
+    int locIdx = lv_dropdown_get_selected(uic_locationDrop);
+
+    // 5. Timeout
+    uint16_t timeoutIdx = lv_roller_get_selected(uic_timeoutRoller);
+    // Options: "10s\n30s\n1m\n2m\n5m\n10m\nAlways On"
+    switch(timeoutIdx) {
+        case 0: screenTimeout = 10000; break;
+        case 1: screenTimeout = 30000; break;
+        case 2: screenTimeout = 60000; break;
+        case 3: screenTimeout = 120000; break;
+        case 4: screenTimeout = 300000; break;
+        case 5: screenTimeout = 600000; break;
+        case 6: screenTimeout = 0xFFFFFFFF; break; // Always on
+        default: screenTimeout = 30000; break;
+    }
+
+    // Save to flash
+    saveSystemConfig(brightnessVal, autoBright, tzIdx, locIdx, timeoutIdx);
+
+    // 6. Publish MQTT
+    StaticJsonDocument<512> doc;
+    doc["device_id"] = "esp32_01"; 
+    doc["timezone"] = timezoneBuf;
+    doc["location"] = locationBuf;
+
+    char buffer[512];
+    serializeJson(doc, buffer);
+    client.publish("iot/esp32/telemetry", buffer);
+    
+    Serial.println("[System] Config updated and published");
+}
 
 

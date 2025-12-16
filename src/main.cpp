@@ -23,8 +23,12 @@ RTC_DS3231 rtc;
 #define TRIG_PIN 18
 #define ECHO_PIN 17
 #define DETECTION_DISTANCE 30 // cm - khoảng cách phát hiện
-#define SCREEN_ON_TIME 30000  // 30 giây giữ màn hình sáng
-#define SCREEN_BRIGHTNESS 255 // Độ sáng màn hình khi bật
+unsigned long screenTimeout = 30000;  // 30 giây giữ màn hình sáng
+int screenMaxBrightness = 255; // Độ sáng màn hình khi bật
+
+void setAutoBrightness(bool enable) {
+    // Empty for now 
+}
 
 // --- Screen Control Variables ---
 unsigned long lastDetectionTime = 0;
@@ -234,13 +238,13 @@ void loop()
             if (!screenOn)
             {
                 screenOn = true;
-                targetBrightness = SCREEN_BRIGHTNESS;
+                targetBrightness = screenMaxBrightness;
             }
         }
     }
 
     // --- Kiểm tra thời gian tự tắt màn ---
-    if (screenOn && (millis() - lastDetectionTime > SCREEN_ON_TIME))
+    if (screenOn && (millis() - lastDetectionTime > screenTimeout))
     {
         screenOn = false;
         targetBrightness = 0;
