@@ -584,7 +584,7 @@ void System_Init()
   }
   // Set brightness slider range and initial value
   if (uic_brightness) {
-      lv_slider_set_range(uic_brightness, 0, 255);
+      lv_slider_set_range(uic_brightness, 30, 255);
       lv_slider_set_value(uic_brightness, screenMaxBrightness, LV_ANIM_OFF);
   }
   
@@ -942,6 +942,7 @@ void onUpdateConfig(lv_event_t * e) {
 
     // 1. Brightness
     int brightnessVal = lv_slider_get_value(uic_brightness);
+    if (brightnessVal < 30) brightnessVal = 30; // Ensure minimum brightness
     screenMaxBrightness = brightnessVal;
     targetBrightness = screenMaxBrightness; 
 

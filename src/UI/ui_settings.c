@@ -200,7 +200,8 @@ void ui_settings_screen_init(void)
     lv_obj_set_style_text_font(ui_Label5, &ui_font_Setting, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_brightness = lv_slider_create(ui_setting1);
-    lv_slider_set_range(ui_brightness, 80, 255);
+    lv_slider_set_range(ui_brightness, 30, 255);
+    lv_slider_set_mode(ui_brightness, LV_SLIDER_MODE_RANGE);
     lv_slider_set_value(ui_brightness, 0, LV_ANIM_OFF);
     if(lv_slider_get_mode(ui_brightness) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_brightness, 0, LV_ANIM_OFF);
     lv_obj_set_width(ui_brightness, lv_pct(38));
