@@ -14,9 +14,9 @@ void stop_main_animations(lv_event_t * e);
 void stop_alarm_animations(lv_event_t * e);
 void dismissAlarmButton(lv_event_t * e);
 void alarmSnooze(lv_event_t * e);
-void systemConfig(lv_event_t * e);
 void loadWifiSettings(lv_event_t * e);
 void saveWifiSettings(lv_event_t * e);
+void systemConfig(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

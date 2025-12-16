@@ -4,8 +4,9 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     ui_mainTime.c
     ui_alarmRang.c
     ui_tempatureScreen.c
-    ui_settings.c
     ui_settingsWifi.c
+    ui_settings.c
+    ui_pomodoro.c
     ui_theme_manager.c
     ui_themes.c
     ui.c

@@ -35,8 +35,9 @@ extern "C" {
 #include "ui_mainTime.h"
 #include "ui_alarmRang.h"
 #include "ui_tempatureScreen.h"
-#include "ui_settings.h"
 #include "ui_settingsWifi.h"
+#include "ui_settings.h"
+#include "ui_pomodoro.h"
 
 ///////////////////// VARIABLES ////////////////////
 
