@@ -29,6 +29,10 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     ui_img_cloudy_png.c
     ui_img_humidity_png.c
     ui_img_air_png.c
+    ui_img_home_30dp_ffffff_fill0_wght400_grad0_opsz24_png.c
+    ui_img_timer_24dp_789de5_fill0_wght400_grad0_opsz24_png.c
+    ui_img_timer_off_24dp_ea3323_fill0_wght400_grad0_opsz24_png.c
+    ui_img_timer_play_24dp_0eb456_fill0_wght400_grad0_opsz24_png.c
     ui_img_1728761651.c
     ui_img_1728760626.c
     ui_img_1728768049.c
@@ -45,7 +49,6 @@ SET(SOURCES ui_comp_tempaturedisplay.c
     ui_img_920896594.c
     ui_img_920895569.c
     ui_img_920902992.c
-    ui_img_1548409061.c
     fonts/ui_font_alarmBig.c
     fonts/ui_font_HeadingTemp.c
     fonts/ui_font_Heading_1.c

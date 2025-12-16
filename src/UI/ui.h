@@ -72,6 +72,14 @@ LV_IMG_DECLARE(ui_img_home_png);    // assets/home.png
 LV_IMG_DECLARE(ui_img_cloudy_png);    // assets/cloudy.png
 LV_IMG_DECLARE(ui_img_humidity_png);    // assets/humidity.png
 LV_IMG_DECLARE(ui_img_air_png);    // assets/air.png
+LV_IMG_DECLARE(
+    ui_img_home_30dp_ffffff_fill0_wght400_grad0_opsz24_png);    // assets/home_30dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png
+LV_IMG_DECLARE(
+    ui_img_timer_24dp_789de5_fill0_wght400_grad0_opsz24_png);    // assets/timer_24dp_789DE5_FILL0_wght400_GRAD0_opsz24.png
+LV_IMG_DECLARE(
+    ui_img_timer_off_24dp_ea3323_fill0_wght400_grad0_opsz24_png);    // assets/timer_off_24dp_EA3323_FILL0_wght400_GRAD0_opsz24.png
+LV_IMG_DECLARE(
+    ui_img_timer_play_24dp_0eb456_fill0_wght400_grad0_opsz24_png);    // assets/timer_play_24dp_0EB456_FILL0_wght400_GRAD0_opsz24.png
 LV_IMG_DECLARE(ui_img_1728761651);    // assets/ezgif-split/frame_01.png
 LV_IMG_DECLARE(ui_img_1728760626);    // assets/ezgif-split/frame_02.png
 LV_IMG_DECLARE(ui_img_1728768049);    // assets/ezgif-split/frame_03.png
@@ -88,7 +96,6 @@ LV_IMG_DECLARE(ui_img_920907340);    // assets/ezgif-split/frame_13.png
 LV_IMG_DECLARE(ui_img_920896594);    // assets/ezgif-split/frame_15.png
 LV_IMG_DECLARE(ui_img_920895569);    // assets/ezgif-split/frame_16.png
 LV_IMG_DECLARE(ui_img_920902992);    // assets/ezgif-split/frame_17.png
-LV_IMG_DECLARE(ui_img_1548409061);    // assets/dark-starry-night-sky-with-black-background_1100672-16821.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_alarmBig);
