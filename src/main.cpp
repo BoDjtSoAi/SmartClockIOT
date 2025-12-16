@@ -192,6 +192,10 @@ void updateTargetBrightness()
     {
         targetBrightness = ambientBrightness; // LDR
     }
+    else
+    {
+        targetBrightness = screenMaxBrightness;
+    }
 }
 
 void setup()
@@ -292,7 +296,7 @@ void loop()
 
     // --- Điều chỉnh độ sáng từ từ ---
     static unsigned long lastBrightnessUpdate = 0;
-    if (millis() - lastBrightnessUpdate >= 30) // Cập nhật mỗi 30ms
+    if (millis() - lastBrightnessUpdate >= 80) // Cập nhật mỗi 80ms
     {
         lastBrightnessUpdate = millis();
         smoothBrightness();
