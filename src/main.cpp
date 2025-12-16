@@ -256,6 +256,7 @@ void setup()
 
     // --- 6. Init UI ---
     ui_init();
+    Timer_Init(); // Initialize Timer events
     System_Init();
 }
 
@@ -441,7 +442,6 @@ void loop()
         updateWifiStatus(); // Cập nhật trạng thái WiFi mỗi 5 giây
         last_check = millis();
     }
-    System_Handle_Loop();
     Timer_Loop();
-    delay(3); // Nhường CPU để không bị nóng
+    System_Handle_Loop();
 }

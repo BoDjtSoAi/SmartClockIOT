@@ -12,17 +12,19 @@ unsigned long lastTimerTick = 0;
 extern int buzzerBeepCount;
 extern bool buzzerState;
 
-// Externs from UI (if not already available via ui.h, but ui.h declares them)
-// ui.h includes ui_pomodoro.h which declares ui_rollHour etc.
-// But we need the pointers to the objects.
-// In ui_pomodoro.c, uic_* are assigned to ui_*.
-// We should use ui_* variables as they are the global ones declared in headers.
-// ui_pomodoro.h declares `extern lv_obj_t * ui_rollHour;`
-// So we can use `ui_rollHour`.
+void ui_event_returnToTimer(lv_event_t * e) {
+    if (Timer_IsActive()) {
+        _ui_screen_change(&ui_pomodoro, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_pomodoro_screen_init);
+    }
+}
 
 void Timer_Init()
 {
-    // Initialize anything if needed
+    // Make dateMonth clickable to return to timer
+    if (ui_dateMonth) {
+        lv_obj_add_flag(ui_dateMonth, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_add_event_cb(ui_dateMonth, ui_event_returnToTimer, LV_EVENT_CLICKED, NULL);
+    }
 }
 
 void Timer_Start()
@@ -49,19 +51,15 @@ void Timer_Start()
     int s = lv_roller_get_selected(ui_rollSeconds);
 
     timerDuration = h * 3600 + m * 60 + s;
-    if (timerDuration <= 0)
-    {
-        if (ui_SetupTime)
-            _ui_flag_modify(ui_SetupTime, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
-        if (ui_contBtn)
-            _ui_flag_modify(ui_contBtn, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
-        if (ui_contTimer)
-            _ui_flag_modify(ui_contTimer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
-        if (ui_contBtnRUN)
-            _ui_flag_modify(ui_contBtnRUN, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
-        if (ui_countDown)
-            _ui_flag_modify(ui_countDown, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
-    } // khỏi chạy linh tinh
+    if (timerDuration <= 0) {
+        // Revert UI changes made by SquareLine event
+        if (ui_SetupTime) _ui_flag_modify(ui_SetupTime, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+        if (ui_contBtn) _ui_flag_modify(ui_contBtn, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+        if (ui_contTimer) _ui_flag_modify(ui_contTimer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+        if (ui_contBtnRUN) _ui_flag_modify(ui_contBtnRUN, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+        if (ui_countDown) _ui_flag_modify(ui_countDown, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+        return;
+    }
 
     timerRemaining = timerDuration;
     timerActive = true;
