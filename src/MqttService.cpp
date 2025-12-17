@@ -119,7 +119,7 @@ void saveWifiConfig(const char *ssid, const char *pwd)
 
   global_ssid = String(ssid);
   global_password = String(pwd);
-  Serial.println("[WiFi] Config saved");
+  Serial.println("[WiFi] Config saved"); //ahihi được rùi ^^
 }
 
 void loadWifiConfig()
