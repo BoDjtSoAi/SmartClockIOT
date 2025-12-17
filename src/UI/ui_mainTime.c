@@ -84,6 +84,24 @@ void ui_event_mainTime(lv_event_t * e)
     }
 }
 
+void ui_event_Image2(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_tempatureScreen, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_tempatureScreen_screen_init);
+    }
+}
+
+void ui_event_wifiIcon(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_settingsWifi, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_settingsWifi_screen_init);
+    }
+}
+
 // build funtions
 
 void ui_mainTime_screen_init(void)
@@ -111,7 +129,6 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_flex_flow(ui_Container1, LV_FLEX_FLOW_COLUMN_REVERSE);
     lv_obj_set_flex_align(ui_Container1, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
     lv_obj_clear_flag(ui_Container1, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_opa(ui_Container1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_dateMonthPanel = lv_obj_create(ui_Container1);
     lv_obj_set_width(ui_dateMonthPanel, lv_pct(100));
@@ -410,7 +427,7 @@ void ui_mainTime_screen_init(void)
     lv_obj_set_x(ui_wifiIcon, -28);
     lv_obj_set_y(ui_wifiIcon, 0);
     lv_obj_set_align(ui_wifiIcon, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_wifiIcon, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_wifiIcon, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_wifiIcon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_img_set_zoom(ui_wifiIcon, 115);
     lv_obj_set_style_img_recolor(ui_wifiIcon, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -435,6 +452,8 @@ void ui_mainTime_screen_init(void)
     lv_label_set_text(ui_Label3, "5V|1A");
     lv_obj_set_style_text_font(ui_Label3, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    lv_obj_add_event_cb(ui_Image2, ui_event_Image2, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_wifiIcon, ui_event_wifiIcon, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_mainTime, ui_event_mainTime, LV_EVENT_ALL, NULL);
     uic_mainTime = ui_mainTime;
     uic_Container5 = ui_Container5;

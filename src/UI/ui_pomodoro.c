@@ -423,6 +423,7 @@ void ui_pomodoro_screen_init(void)
     lv_obj_set_align(ui_contBtn, LV_ALIGN_BOTTOM_MID);
     lv_obj_set_flex_flow(ui_contBtn, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(ui_contBtn, LV_FLEX_ALIGN_SPACE_AROUND, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_SPACE_AROUND);
+    lv_obj_add_flag(ui_contBtn, LV_OBJ_FLAG_HIDDEN);     /// Flags
     lv_obj_clear_flag(ui_contBtn, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_btnDismiss = lv_btn_create(ui_contBtn);
@@ -474,7 +475,6 @@ void ui_pomodoro_screen_init(void)
     lv_obj_set_align(ui_contBtnRUN, LV_ALIGN_BOTTOM_MID);
     lv_obj_set_flex_flow(ui_contBtnRUN, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(ui_contBtnRUN, LV_FLEX_ALIGN_SPACE_AROUND, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_SPACE_AROUND);
-    lv_obj_add_flag(ui_contBtnRUN, LV_OBJ_FLAG_HIDDEN);     /// Flags
     lv_obj_clear_flag(ui_contBtnRUN, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_btnDismiss1 = lv_btn_create(ui_contBtnRUN);
